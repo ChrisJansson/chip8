@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cj.Chip8.Cpu", "Cj.Chip8.Cpu\Cj.Chip8.Cpu.csproj", "{342FB268-F67D-493B-9CAE-A30AD5B071AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cj.Chip8.Test", "Cj.Chip8.Test\Cj.Chip8.Test.csproj", "{F5D940F2-A599-4A4A-BB40-8A573F2D734D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{342FB268-F67D-493B-9CAE-A30AD5B071AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{342FB268-F67D-493B-9CAE-A30AD5B071AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{342FB268-F67D-493B-9CAE-A30AD5B071AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{342FB268-F67D-493B-9CAE-A30AD5B071AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5D940F2-A599-4A4A-BB40-8A573F2D734D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5D940F2-A599-4A4A-BB40-8A573F2D734D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5D940F2-A599-4A4A-BB40-8A573F2D734D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5D940F2-A599-4A4A-BB40-8A573F2D734D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
