@@ -106,7 +106,7 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
-        public void Should_not_increment_program_counter_by_two_instructions_when_Vx_is_not_equal_to_argument_onSE()
+        public void Should_not_increment_program_counter_by_two_instructions_when_Vx_is_not_equal_to_argument_on_SE()
         {
             for (short register = 0; register < 16; register++)
             {
