@@ -19,15 +19,15 @@
             State.ProgramCounter += 2;
         }
 
-        public void Jump(short argument)
+        public void Jump(short address)
         {
-            State.ProgramCounter = argument;
+            State.ProgramCounter = address;
         }
 
-        public void Call(short argument)
+        public void Call(short address)
         {
             State.Stack[State.StackPointer++] = State.ProgramCounter;
-            State.ProgramCounter = argument;
+            State.ProgramCounter = address;
         }
 
         public void Se(byte register, byte kk)
