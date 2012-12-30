@@ -30,11 +30,10 @@
             State.ProgramCounter = argument;
         }
 
-        public void Se(short argument)
+        public void Se(byte register, byte kk)
         {
-            var register = (0xF00 & argument) >> 8;
             short registerValue = State.Vx[register];
-            short valueToCompare = (short) (0xFF & argument);
+            short valueToCompare = kk;
 
             if (registerValue == valueToCompare)
                 State.ProgramCounter += 4;

@@ -86,17 +86,16 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_increment_program_counter_by_two_instructions_when_Vx_is_equal_to_argument_on_SE()
         {
-            for (short register = 0; register < 16; register++)
+            for (byte register = 0; register < 16; register++)
             {
-                for (short i = 0; i < 256; i++)
+                for (short i = 0; i <= 255; i++)
                 {
                     _cpu.State.Vx[register] = i;
 
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
 
-                    short argument = (short)((register << 8) | i);
-                    var state = Execute(x => x.Se, argument);
+                    var state = Execute(x => x.Se, register, (byte) i);
 
                     state.ProgramCounter.Should().Be(initialProgramCounter + 4);
 
@@ -108,23 +107,33 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_not_increment_program_counter_by_two_instructions_when_Vx_is_not_equal_to_argument_on_SE()
         {
-            for (short register = 0; register < 16; register++)
+            for (var register = 0; register < 16; register++)
             {
-                for (short i = 0; i < 256; i++)
+                for (var i = 0; i <= 255; i++)
                 {
-                    _cpu.State.Vx[register] = i;
+                    _cpu.State.Vx[register] = (short) i;
 
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
 
-                    short argument = (short)((register << 8) | (i + 1) & 0xFF);
-                    var state = Execute(x => x.Se, argument);
+                    var argument = FindValueNotEqualTo(i, 255);
+                    var state = Execute(x => x.Se, (byte) register, (byte) argument);
 
                     state.ProgramCounter.Should().Be(initialProgramCounter + 2);
 
                     ResetCpuState();
                 }
             }
+        }
+
+        private int FindValueNotEqualTo(int value, int max)
+        {
+            var random = new Random();
+            
+            int newValue;
+            while ((newValue = random.Next(max)) == value) {}
+
+            return newValue;
         }
 
         private short ProgramCounter
@@ -151,6 +160,14 @@ namespace Cj.Chip8.Test
             var action = instructionGetter(_cpu);
 
             action(argument);
+            return _cpu.State;
+        }
+
+        private CpuState Execute(Func<Chip8Cpu, Action<byte, byte>> instructionGetter, byte register, byte argument)
+        {
+            var action = instructionGetter(_cpu);
+
+            action(register, argument);
             return _cpu.State;
         }
     }
