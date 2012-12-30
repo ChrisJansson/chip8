@@ -35,7 +35,7 @@ namespace Cj.Chip8.Test
         public void Should_clear_display_on_Cls()
         {
             const short initialProgramCounter = 4;
-            SetProgramCounterTo(initialProgramCounter);
+            ProgramCounter = initialProgramCounter;
 
             _cpu.Cls();
 
@@ -71,7 +71,7 @@ namespace Cj.Chip8.Test
             for (short argument = 0; argument <= 0xFFF; argument++)
             {
                 const short initialProgramCounter = 0x600;
-                SetProgramCounterTo(initialProgramCounter);
+                ProgramCounter = initialProgramCounter;
 
                 _cpu.Call(argument);
 
@@ -93,13 +93,13 @@ namespace Cj.Chip8.Test
                     _cpu.State.Vx[register] = i;
 
                     const short initialProgramCounter = 4;
-                    SetProgramCounterTo(initialProgramCounter);
+                    ProgramCounter = initialProgramCounter;
 
                     short argument = (short)((register << 8) | i);
                     _cpu.Se(argument);
 
                     _cpu.State.ProgramCounter.Should().Be(initialProgramCounter + 4);
-                    
+
                     ResetCpuState();
                 }
             }
@@ -115,9 +115,9 @@ namespace Cj.Chip8.Test
                     _cpu.State.Vx[register] = i;
 
                     const short initialProgramCounter = 4;
-                    SetProgramCounterTo(initialProgramCounter);
+                    ProgramCounter = initialProgramCounter;
 
-                    short argument = (short)((register << 8) | (i+1) & 0xFF);
+                    short argument = (short)((register << 8) | (i + 1) & 0xFF);
                     _cpu.Se(argument);
 
                     _cpu.State.ProgramCounter.Should().Be(initialProgramCounter + 2);
@@ -127,14 +127,15 @@ namespace Cj.Chip8.Test
             }
         }
 
-        private void SetProgramCounterTo(short value)
-        {
-            _cpu.State.ProgramCounter = value;
-        }
+        //private void SetProgramCounterTo(short value)
+        //{
+        //    _cpu.State.ProgramCounter = value;
+        //}
 
         private short ProgramCounter
         {
             get { return _cpu.State.ProgramCounter; }
+            set { _cpu.State.ProgramCounter = value; }
         }
 
         private void ResetCpuState()
