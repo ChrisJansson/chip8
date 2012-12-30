@@ -7,6 +7,6 @@
         public byte StackPointer;
 
         public short[] Stack = new short[16];
-        public short[] Vx = new short[16];
+        public byte[] Vx = new byte[16];
     }
 }

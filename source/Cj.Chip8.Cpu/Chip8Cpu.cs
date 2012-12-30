@@ -41,6 +41,17 @@
                 State.ProgramCounter += 2;
         }
 
+        public void Sne(byte register, byte kk)
+        {
+            short registerValue = State.Vx[register];
+            short valueToCompare = kk;
+
+            if (registerValue != valueToCompare)
+                State.ProgramCounter += 4;
+            else
+                State.ProgramCounter += 2;
+        }
+        
         public void Ret()
         {
             State.ProgramCounter = State.Stack[--State.StackPointer];
