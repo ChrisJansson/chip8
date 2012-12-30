@@ -37,7 +37,7 @@ namespace Cj.Chip8.Test
             const short initialProgramCounter = 4;
             ProgramCounter = initialProgramCounter;
 
-            _cpu.Cls();
+            Execute(x => x.Cls);
 
             _display.Verify(x => x.Clear());
             ProgramCounter.Should().Be(initialProgramCounter + 2);
@@ -49,10 +49,10 @@ namespace Cj.Chip8.Test
             _cpu.State.Stack[0] = 4;
             _cpu.State.StackPointer = 1;
 
-            _cpu.Ret();
+            var state = Execute(x => x.Ret);
 
             ProgramCounter.Should().Be(4);
-            CpuState.StackPointer.Should().Be(0);
+            state.StackPointer.Should().Be(0);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace Cj.Chip8.Test
         {
             for (short argument = 0; argument <= 0xFFF; argument++)
             {
-                _cpu.Jump(argument);
+                Execute(x => x.Jump, argument);
                 ProgramCounter.Should().Be(argument);
             }
         }
@@ -73,11 +73,11 @@ namespace Cj.Chip8.Test
                 const short initialProgramCounter = 0x600;
                 ProgramCounter = initialProgramCounter;
 
-                _cpu.Call(argument);
+                var state = Execute(x => x.Call, argument);
 
                 ProgramCounter.Should().Be(argument);
-                CpuState.StackPointer.Should().Be(1);
-                CpuState.Stack[0].Should().Be(initialProgramCounter);
+                state.StackPointer.Should().Be(1);
+                state.Stack[0].Should().Be(initialProgramCounter);
 
                 ResetCpuState();
             }
@@ -96,9 +96,9 @@ namespace Cj.Chip8.Test
                     ProgramCounter = initialProgramCounter;
 
                     short argument = (short)((register << 8) | i);
-                    _cpu.Se(argument);
+                    var state = Execute(x => x.Se, argument);
 
-                    CpuState.ProgramCounter.Should().Be(initialProgramCounter + 4);
+                    state.ProgramCounter.Should().Be(initialProgramCounter + 4);
 
                     ResetCpuState();
                 }
@@ -118,18 +118,13 @@ namespace Cj.Chip8.Test
                     ProgramCounter = initialProgramCounter;
 
                     short argument = (short)((register << 8) | (i + 1) & 0xFF);
-                    _cpu.Se(argument);
+                    var state = Execute(x => x.Se, argument);
 
-                    CpuState.ProgramCounter.Should().Be(initialProgramCounter + 2);
+                    state.ProgramCounter.Should().Be(initialProgramCounter + 2);
 
                     ResetCpuState();
                 }
             }
-        }
-
-        private CpuState CpuState
-        {
-            get { return _cpu.State; }
         }
 
         private short ProgramCounter
@@ -141,6 +136,22 @@ namespace Cj.Chip8.Test
         private void ResetCpuState()
         {
             _cpu.State = new CpuState();
+        }
+
+        private CpuState Execute(Func<Chip8Cpu, Action> instructionGetter)
+        {
+            var action = instructionGetter(_cpu);
+
+            action();
+            return _cpu.State;
+        }
+
+        private CpuState Execute(Func<Chip8Cpu, Action<short>> instructionGetter, short argument)
+        {
+            var action = instructionGetter(_cpu);
+
+            action(argument);
+            return _cpu.State;
         }
     }
 }
