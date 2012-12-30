@@ -127,11 +127,6 @@ namespace Cj.Chip8.Test
             }
         }
 
-        //private void SetProgramCounterTo(short value)
-        //{
-        //    _cpu.State.ProgramCounter = value;
-        //}
-
         private short ProgramCounter
         {
             get { return _cpu.State.ProgramCounter; }
