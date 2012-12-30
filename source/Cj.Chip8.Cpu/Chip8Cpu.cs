@@ -30,7 +30,7 @@
             State.ProgramCounter = address;
         }
 
-        public void Se(byte register, byte kk)
+        public void SeConstant(byte register, byte kk)
         {
             short registerValue = State.Vx[register];
             short valueToCompare = kk;
@@ -41,7 +41,7 @@
                 State.ProgramCounter += 2;
         }
 
-        public void Sne(byte register, byte kk)
+        public void SneConstant(byte register, byte kk)
         {
             short registerValue = State.Vx[register];
             short valueToCompare = kk;
