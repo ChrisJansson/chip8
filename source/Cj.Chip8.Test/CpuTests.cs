@@ -102,12 +102,12 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
-        public void Should_not_increment_program_counter_by_two_instructions_when_Vx_is_not_equal_to_argument_on_SE()
+        public void Should_increment_program_counter_by_one_instructions_when_Vx_is_not_equal_to_argument_on_SE()
         {
             const int argumentMax = 255;
             TestForAllRegistersAndArgumentRange((register, argument) =>
                 {
-                    _cpu.State.Vx[register] = (byte) FindValueNotEqualTo(argument, argumentMax);
+                    _cpu.State.Vx[register] = (byte)FindValueNotEqualTo(argument, argumentMax);
 
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
@@ -120,7 +120,7 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
-        public void Should_not_increment_program_counter_by_two_when_Vx_is_equal_to_argument_on_SNE()
+        public void Should_increment_program_counter_by_one_when_Vx_is_equal_to_argument_on_SNE()
         {
             const int argumentMax = 255;
             TestForAllRegistersAndArgumentRange((register, argument) =>
@@ -152,6 +152,52 @@ namespace Cj.Chip8.Test
 
                 state.ProgramCounter.Should().Be(initialProgramCounter + 4);
             },
+                argumentMax);
+        }
+
+        [Test]
+        public void Should_increment_program_counter_by_two_when_Vx_is_equal_to_Vy_on_SE()
+        {
+            const int argumentMax = 15;
+            TestForAllRegistersAndArgumentRange((vx, vy) =>
+                {
+                    const byte equalValue = 255;
+
+                    _cpu.State.Vx[vx] = equalValue;
+                    _cpu.State.Vx[vy] = equalValue;
+
+                    const short initialProgramCounter = 4;
+                    ProgramCounter = initialProgramCounter;
+
+                    var state = Execute(x => x.Se, vx, vy);
+
+                    state.ProgramCounter.Should().Be(initialProgramCounter + 4);
+                },
+                argumentMax);
+        }
+
+        [Test]
+        public void Should_increment_program_counter_by_one_when_Vx_is_not_equal_to_Vy_on_SE()
+        {
+            const int argumentMax = 15;
+            TestForAllRegistersAndArgumentRange((vx, vy) =>
+                {
+                    if (vx == vy)
+                        return;
+
+                    const byte firstValue = 255;
+                    byte otherValue = (byte)FindValueNotEqualTo(firstValue, byte.MaxValue);
+
+                    _cpu.State.Vx[vx] = firstValue;
+                    _cpu.State.Vx[vy] = otherValue;
+
+                    const short initialProgramCounter = 4;
+                    ProgramCounter = initialProgramCounter;
+
+                    var state = Execute(x => x.Se, vx, vy);
+
+                    state.ProgramCounter.Should().Be(initialProgramCounter + 2);
+                },
                 argumentMax);
         }
 
