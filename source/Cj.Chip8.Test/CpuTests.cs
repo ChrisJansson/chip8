@@ -210,7 +210,7 @@ namespace Cj.Chip8.Test
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
 
-                    var state = Execute(x => x.Ld, vx, argument);
+                    var state = Execute(x => x.LdConstant, vx, argument);
 
                     state.ProgramCounter.Should().Be(initialProgramCounter + 2);
                     state.V[vx].Should().Be(argument);
@@ -229,7 +229,7 @@ namespace Cj.Chip8.Test
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
 
-                    var state = Execute(x => x.Add, vx, argument);
+                    var state = Execute(x => x.AddConstant, vx, argument);
 
                     state.ProgramCounter.Should().Be(initialProgramCounter + 2);
                     state.V[vx].Should().Be((byte) (15 + argument));
