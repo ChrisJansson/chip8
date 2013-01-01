@@ -97,5 +97,11 @@
             State.V[vx] = (byte)(State.V[vx] & State.V[vy]);
             State.ProgramCounter += 2;
         }
+
+        public void Xor(byte vx, byte vy)
+        {
+            State.V[vx] = (byte)(State.V[vx] ^ State.V[vy]);
+            State.ProgramCounter += 2;
+        }
     }
 }

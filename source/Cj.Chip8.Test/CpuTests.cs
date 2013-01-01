@@ -299,6 +299,27 @@ namespace Cj.Chip8.Test
             argumentMax);
         }
 
+        [Test]
+        public void Should_bitwise_xor_vx_and_vy_then_store_result_in_vx_and_increment_program_counter_on_XOR()
+        {
+            const int argumentMax = 15;
+            TestForAllRegistersAndArgumentRange((vx, vy) =>
+            {
+                _cpu.State.V[vx] = 0x0A; //00001010
+                _cpu.State.V[vy] = 0x0C; //00001100
+                var expectedResult = _cpu.State.V[vx] ^ _cpu.State.V[vy];
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Xor, vx, vy);
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[vx].Should().Be((byte)expectedResult);
+            },
+            argumentMax);
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)
