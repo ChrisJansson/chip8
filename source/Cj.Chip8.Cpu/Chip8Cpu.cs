@@ -68,15 +68,21 @@
                 State.ProgramCounter += 2;
         }
 
-        public void Ld(byte vx, byte argument)
+        public void LdConstant(byte vx, byte argument)
         {
             State.V[vx] = argument;
             State.ProgramCounter += 2;
         }
 
-        public void Add(byte vx, byte argument)
+        public void AddConstant(byte vx, byte argument)
         {
             State.V[vx] += argument;
+            State.ProgramCounter += 2;
+        }
+
+        public void Ld(byte vx, byte vy)
+        {
+            State.V[vx] = State.V[vy];
             State.ProgramCounter += 2;
         }
     }
