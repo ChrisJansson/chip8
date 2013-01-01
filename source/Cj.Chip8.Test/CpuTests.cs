@@ -89,7 +89,7 @@ namespace Cj.Chip8.Test
             const int argumentMax = 255;
             TestForAllRegistersAndArgumentRange((register, argument) =>
             {
-                _cpu.State.Vx[register] = argument;
+                _cpu.State.V[register] = argument;
 
                 const short initialProgramCounter = 4;
                 ProgramCounter = initialProgramCounter;
@@ -107,7 +107,7 @@ namespace Cj.Chip8.Test
             const int argumentMax = 255;
             TestForAllRegistersAndArgumentRange((register, argument) =>
                 {
-                    _cpu.State.Vx[register] = (byte)FindValueNotEqualTo(argument, argumentMax);
+                    _cpu.State.V[register] = (byte)FindValueNotEqualTo(argument, argumentMax);
 
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
@@ -125,7 +125,7 @@ namespace Cj.Chip8.Test
             const int argumentMax = 255;
             TestForAllRegistersAndArgumentRange((register, argument) =>
             {
-                _cpu.State.Vx[register] = argument;
+                _cpu.State.V[register] = argument;
 
                 const short initialProgramCounter = 4;
                 ProgramCounter = initialProgramCounter;
@@ -143,7 +143,7 @@ namespace Cj.Chip8.Test
             const int argumentMax = 255;
             TestForAllRegistersAndArgumentRange((register, argument) =>
             {
-                _cpu.State.Vx[register] = (byte)FindValueNotEqualTo(argument, argumentMax);
+                _cpu.State.V[register] = (byte)FindValueNotEqualTo(argument, argumentMax);
 
                 const short initialProgramCounter = 4;
                 ProgramCounter = initialProgramCounter;
@@ -163,8 +163,8 @@ namespace Cj.Chip8.Test
                 {
                     const byte equalValue = 255;
 
-                    _cpu.State.Vx[vx] = equalValue;
-                    _cpu.State.Vx[vy] = equalValue;
+                    _cpu.State.V[vx] = equalValue;
+                    _cpu.State.V[vy] = equalValue;
 
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
@@ -188,8 +188,8 @@ namespace Cj.Chip8.Test
                     const byte firstValue = 255;
                     byte otherValue = (byte)FindValueNotEqualTo(firstValue, byte.MaxValue);
 
-                    _cpu.State.Vx[vx] = firstValue;
-                    _cpu.State.Vx[vy] = otherValue;
+                    _cpu.State.V[vx] = firstValue;
+                    _cpu.State.V[vy] = otherValue;
 
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
@@ -213,8 +213,27 @@ namespace Cj.Chip8.Test
                     var state = Execute(x => x.Ld, vx, argument);
 
                     state.ProgramCounter.Should().Be(initialProgramCounter + 2);
-                    state.Vx[vx].Should().Be(argument);
+                    state.V[vx].Should().Be(argument);
                 },
+                argumentMax);
+        }
+
+        [Test]
+        public void Should_add_value_to_vx_and_increment_program_counter_on_ADD()
+        {
+            const int argumentMax = byte.MaxValue;
+            TestForAllRegistersAndArgumentRange((vx, argument) =>
+                {
+                    _cpu.State.V[vx] = 15;
+                    
+                    const short initialProgramCounter = 4;
+                    ProgramCounter = initialProgramCounter;
+
+                    var state = Execute(x => x.Add, vx, argument);
+
+                    state.ProgramCounter.Should().Be(initialProgramCounter + 2);
+                    state.V[vx].Should().Be((byte) (15 + argument));
+                }, 
                 argumentMax);
         }
 

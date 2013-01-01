@@ -32,7 +32,7 @@
 
         public void SeConstant(byte register, byte kk)
         {
-            var registerValue = State.Vx[register];
+            var registerValue = State.V[register];
             var valueToCompare = kk;
 
             if (registerValue == valueToCompare)
@@ -43,7 +43,7 @@
 
         public void SneConstant(byte register, byte kk)
         {
-            var registerValue = State.Vx[register];
+            var registerValue = State.V[register];
             var valueToCompare = kk;
 
             if (registerValue != valueToCompare)
@@ -59,8 +59,8 @@
 
         public void Se(byte vx, byte vy)
         {
-            var left = State.Vx[vx];
-            var right = State.Vx[vy];
+            var left = State.V[vx];
+            var right = State.V[vy];
 
             if (left == right)
                 State.ProgramCounter += 4;
@@ -70,7 +70,13 @@
 
         public void Ld(byte vx, byte argument)
         {
-            State.Vx[vx] = argument;
+            State.V[vx] = argument;
+            State.ProgramCounter += 2;
+        }
+
+        public void Add(byte vx, byte argument)
+        {
+            State.V[vx] += argument;
             State.ProgramCounter += 2;
         }
     }

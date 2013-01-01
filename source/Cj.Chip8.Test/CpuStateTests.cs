@@ -45,8 +45,8 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_have_16_8byte_registers()
         {
-            _cpuState.Vx.Should().HaveCount(16);
-            _cpuState.Vx.Should().BeOfType<byte[]>();
+            _cpuState.V.Should().HaveCount(16);
+            _cpuState.V.Should().BeOfType<byte[]>();
         }
     }
 }
