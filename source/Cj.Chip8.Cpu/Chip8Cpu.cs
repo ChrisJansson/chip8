@@ -91,5 +91,11 @@
             State.V[vx] = (byte) (State.V[vx] | State.V[vy]);
             State.ProgramCounter += 2;
         }
+
+        public void And(byte vx, byte vy)
+        {
+            State.V[vx] = (byte)(State.V[vx] & State.V[vy]);
+            State.ProgramCounter += 2;
+        }
     }
 }
