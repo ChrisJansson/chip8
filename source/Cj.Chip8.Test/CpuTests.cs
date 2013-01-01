@@ -201,6 +201,23 @@ namespace Cj.Chip8.Test
                 argumentMax);
         }
 
+        [Test]
+        public void Should_load_value_into_register_vx_and_increment_program_counter_on_LD()
+        {
+            const int argumentMax = byte.MaxValue;
+            TestForAllRegistersAndArgumentRange((vx, argument) =>
+                {
+                    const short initialProgramCounter = 4;
+                    ProgramCounter = initialProgramCounter;
+
+                    var state = Execute(x => x.Ld, vx, argument);
+
+                    state.ProgramCounter.Should().Be(initialProgramCounter + 2);
+                    state.Vx[vx].Should().Be(argument);
+                },
+                argumentMax);
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)

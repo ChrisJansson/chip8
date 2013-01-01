@@ -67,5 +67,11 @@
             else
                 State.ProgramCounter += 2;
         }
+
+        public void Ld(byte vx, byte argument)
+        {
+            State.Vx[vx] = argument;
+            State.ProgramCounter += 2;
+        }
     }
 }
