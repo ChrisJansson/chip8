@@ -103,5 +103,14 @@
             State.V[vx] = (byte)(State.V[vx] ^ State.V[vy]);
             State.ProgramCounter += 2;
         }
+
+        public void AddCarry(byte vx, byte vy)
+        {
+            var result = State.V[vx] + State.V[vy];
+            State.V[vx] = (byte)(result & 0xFF);
+            State.V[0x0F] = (byte) (result > byte.MaxValue ? 1 : 0);
+
+            State.ProgramCounter += 2;
+        }
     }
 }

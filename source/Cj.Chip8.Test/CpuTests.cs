@@ -320,6 +320,56 @@ namespace Cj.Chip8.Test
             argumentMax);
         }
 
+        [Test]
+        public void Should_add_vx_and_vy_then_store_result_in_vx_and_set_VF_to_0_and_increment_program_counter_on_ADD_with_carry()
+        {
+            const int argumentMax = 15;
+            TestForAllRegistersAndArgumentRange((vx, vy) =>
+            {
+                if (vx.IsCarryRegister() || vy.IsCarryRegister())
+                    return;
+
+                _cpu.State.V[argumentMax] = 1;
+                _cpu.State.V[vx] = 100;
+                _cpu.State.V[vy] = 100;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.AddCarry, vx, vy);
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[argumentMax].Should().Be(0);
+                state.V[vx].Should().Be(200);
+            },
+            argumentMax);
+        }
+
+        [Test]
+        public void Should_add_vx_and_vy_then_store_result_in_vx_and_set_VF_to_1_and_increment_program_counter_on_ADD_with_carry()
+        {
+            const int argumentMax = 15;
+            TestForAllRegistersAndArgumentRange((vx, vy) =>
+            {
+                if (vx.IsCarryRegister() || vy.IsCarryRegister())
+                    return;
+
+                _cpu.State.V[vx] = 200;
+                _cpu.State.V[vy] = 200;
+                _cpu.State.V[argumentMax] = 0;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.AddCarry, vx, vy);
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[argumentMax].Should().Be(1);
+                state.V[vx].Should().Be(144);
+            },
+            argumentMax);
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)
@@ -329,7 +379,7 @@ namespace Cj.Chip8.Test
             {
                 for (var i = 0; i <= argumentMax; i++)
                 {
-                    asserter((byte)register, (byte)argumentMax);
+                    asserter((byte)register, (byte)i);
                     ResetCpuState();
                 }
             }
@@ -378,6 +428,14 @@ namespace Cj.Chip8.Test
 
             action(register, argument);
             return _cpu.State;
+        }
+    }
+
+    public static class CpuTestExtensions
+    {
+        public static bool IsCarryRegister(this byte register)
+        {
+            return register == 0x0F;
         }
     }
 }
