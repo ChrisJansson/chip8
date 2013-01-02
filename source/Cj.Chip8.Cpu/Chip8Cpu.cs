@@ -120,5 +120,13 @@
 
             State.ProgramCounter += 2;
         }
+
+        public void Shr(byte vx)
+        {
+            State.V[0x0F] = (byte) (State.V[vx] & 0x01);
+            State.V[vx] = (byte) (State.V[vx] >> 1);
+
+            State.ProgramCounter += 2;
+        }
     }
 }

@@ -424,6 +424,44 @@ namespace Cj.Chip8.Test
             argumentMax);
         }
 
+        [Test]
+        public void Should_shift_vx_right_and_set_VF_to_0_and_increment_program_counter_on_SHR()
+        {
+            TestForAllRegisters(vx =>
+                {
+                    _cpu.State.V[vx] = 2;
+                    _cpu.State.V[0x0F] = 1;
+
+                    const short initalProgramCounter = 4;
+                    ProgramCounter = initalProgramCounter;
+
+                    var state = Execute(x => x.Shr(vx));
+                    
+                    state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                    state.V[0x0F].Should().Be(0);
+                    state.V[vx].Should().Be(1); // 2 >> 1
+                });
+        }
+
+        [Test]
+        public void Should_shift_vx_right_and_set_VF_to_1_and_increment_program_counter_on_SHR()
+        {
+            TestForAllRegisters(vx =>
+            {
+                _cpu.State.V[vx] = 3;
+                _cpu.State.V[0x0F] = 0;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Shr(vx));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[0x0F].Should().Be(1);
+                state.V[vx].Should().Be(1); // 2 >> 1
+            });
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)
@@ -436,6 +474,16 @@ namespace Cj.Chip8.Test
                     asserter((byte)register, (byte)i);
                     ResetCpuState();
                 }
+            }
+        }
+
+        private void TestForAllRegisters(Action<byte> asserter)
+        {
+            const int registers = 16;
+            for (var register = 0; register < registers - 1; register++)
+            {
+                    asserter((byte)register);
+                    ResetCpuState();
             }
         }
 
@@ -481,6 +529,12 @@ namespace Cj.Chip8.Test
             var action = instructionGetter(_cpu);
 
             action(register, argument);
+            return _cpu.State;
+        }
+
+        private CpuState Execute(Action<Chip8Cpu> instructionGetter)
+        {
+            instructionGetter(_cpu);
             return _cpu.State;
         }
     }
