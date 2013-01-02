@@ -370,6 +370,60 @@ namespace Cj.Chip8.Test
             argumentMax);
         }
 
+        //8xy5 - SUB Vx, Vy
+        //Set Vx = Vx - Vy, set VF = NOT borrow.
+
+        //If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+        [Test]
+        public void Should_subtract_vy_from_vx_and_store_result_in_vx_and_set_vf_to_1_and_increment_program_counter_on_SUB()
+        {
+            const int argumentMax = 15;
+            TestForAllRegistersAndArgumentRange((vx, vy) =>
+            {
+                if (vx.IsCarryRegister() || vy.IsCarryRegister() || vx == vy)
+                    return;
+
+                _cpu.State.V[vx] = 101;
+                _cpu.State.V[vy] = 100;
+                _cpu.State.V[argumentMax] = 0;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Sub, vx, vy);
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[argumentMax].Should().Be(1);
+                state.V[vx].Should().Be(1);
+            },
+            argumentMax);
+        }
+
+        [Test]
+        public void Should_subtract_vy_from_vx_and_store_result_in_vx_and_set_vf_to_0_and_increment_program_counter_on_SUB()
+        {
+            const int argumentMax = 15;
+            TestForAllRegistersAndArgumentRange((vx, vy) =>
+            {
+                if (vx.IsCarryRegister() || vy.IsCarryRegister() || vx == vy)
+                    return;
+
+                _cpu.State.V[vx] = 100;
+                _cpu.State.V[vy] = 101;
+                _cpu.State.V[argumentMax] = 1;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Sub, vx, vy);
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[argumentMax].Should().Be(0);
+                state.V[vx].Should().Be(255); //Twos complement of 1, or -1 in a byte
+            },
+            argumentMax);
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)
