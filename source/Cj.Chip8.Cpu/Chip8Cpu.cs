@@ -1,4 +1,6 @@
-﻿namespace Cj.Chip8.Cpu
+﻿using System;
+
+namespace Cj.Chip8.Cpu
 {
     public class Chip8Cpu
     {
@@ -125,6 +127,14 @@
         {
             State.V[0x0F] = (byte) (State.V[vx] & 0x01);
             State.V[vx] = (byte) (State.V[vx] >> 1);
+
+            State.ProgramCounter += 2;
+        }
+
+        public void Subn(int vx, int vy)
+        {
+            State.V[0x0F] = (byte) (State.V[vx] > State.V[vy] ? 0 : 1);
+            State.V[vx] = (byte) (State.V[vy] - State.V[vx]);
 
             State.ProgramCounter += 2;
         }

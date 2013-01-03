@@ -372,10 +372,6 @@ namespace Cj.Chip8.Test
             argumentMax);
         }
 
-        //8xy5 - SUB Vx, Vy
-        //Set Vx = Vx - Vy, set VF = NOT borrow.
-
-        //If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
         [Test]
         public void Should_subtract_vy_from_vx_and_store_result_in_vx_and_set_vf_to_1_and_increment_program_counter_on_SUB()
         {
@@ -464,12 +460,8 @@ namespace Cj.Chip8.Test
             });
         }
 
-//        8xy7 - SUBN Vx, Vy
-//Set Vx = Vy - Vx, set VF = NOT borrow.
-
-//If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
         [Test]
-        public void Should_subtract_vx_from_vy_and_set_vx_to_result_and_vf_to_0_on_SUBN()
+        public void Should_subtract_vx_from_vy_and_set_vx_to_result_and_vf_to_not_borrow_1_on_SUBN()
         {
             var argumentCombinations = from register in Enumerable.Range(0, 15)
                                        from argument in Enumerable.Range(0, 15)
@@ -479,26 +471,49 @@ namespace Cj.Chip8.Test
             foreach (var argumentCombination in argumentCombinations)
             {
                 _cpu.State.V[argumentCombination.vx] = 100;
-                //_cpu.State.V[argumentCombination.vy] = 
-                //_cpu.State
+                _cpu.State.V[argumentCombination.vy] = 100;
+                _cpu.State.V[0x0F] = 0;
 
-                //_cpu.State.V[vx] = 3;
-                //_cpu.State.V[0x0F] = 0;
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
 
-                //const short initalProgramCounter = 4;
-                //ProgramCounter = initalProgramCounter;
+                var combination = argumentCombination;
+                var state = Execute(x => x.Subn(combination.vx, combination.vy));
 
-                //var state = Execute(x => x.Shr(vx));
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[0x0F].Should().Be(1);
+                state.V[argumentCombination.vx].Should().Be(0);
 
-                //state.ProgramCounter.Should().Be(initalProgramCounter + 2);
-                //state.V[0x0F].Should().Be(1);
-                //state.V[vx].Should().Be(1); // 2 >> 1
+                ResetCpuState();
             }
+        }
 
-            TestForAllRegistersExceptVfWithArgumentRange((vx, vy) =>
-                {
-                    
-                }, 255);
+        [Test]
+        public void Should_subtract_vx_from_vy_and_set_vx_to_result_and_vf_to_not_borrow_0_on_SUBN()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 15)
+                                       from argument in Enumerable.Range(0, 15)
+                                       where register != argument
+                                       select new { vx = register, vy = argument };
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                _cpu.State.V[argumentCombination.vx] = 101;
+                _cpu.State.V[argumentCombination.vy] = 100;
+                _cpu.State.V[0x0F] = 0;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var combination = argumentCombination;
+                var state = Execute(x => x.Subn(combination.vx, combination.vy));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[0x0F].Should().Be(0);
+                state.V[argumentCombination.vx].Should().Be(255);
+
+                ResetCpuState();
+            }
         }
 
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
