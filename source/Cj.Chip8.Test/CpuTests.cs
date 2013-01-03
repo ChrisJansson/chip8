@@ -24,13 +24,15 @@ namespace Cj.Chip8.Test
     {
         private Chip8Cpu _cpu;
         private Mock<IDisplay> _display;
+        private Mock<IRandomizer> _randomizer;
 
         [SetUp]
         public void SetUp()
         {
             _display = new Mock<IDisplay>();
+            _randomizer = new Mock<IRandomizer>();
 
-            _cpu = new Chip8Cpu(_display.Object);
+            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object);
         }
 
         [Test]
@@ -227,15 +229,15 @@ namespace Cj.Chip8.Test
             TestForAllRegistersAndArgumentRange((vx, argument) =>
                 {
                     _cpu.State.V[vx] = 15;
-                    
+
                     const short initialProgramCounter = 4;
                     ProgramCounter = initialProgramCounter;
 
                     var state = Execute(x => x.AddConstant, vx, argument);
 
                     state.ProgramCounter.Should().Be(initialProgramCounter + 2);
-                    state.V[vx].Should().Be((byte) (15 + argument));
-                }, 
+                    state.V[vx].Should().Be((byte)(15 + argument));
+                },
                 argumentMax);
         }
 
@@ -255,7 +257,7 @@ namespace Cj.Chip8.Test
 
                     state.ProgramCounter.Should().Be(initalProgramCounter + 2);
                     state.V[vx].Should().Be(255);
-                }, 
+                },
             argumentMax);
         }
 
@@ -275,7 +277,7 @@ namespace Cj.Chip8.Test
                 var state = Execute(x => x.Or, vx, vy);
 
                 state.ProgramCounter.Should().Be(initalProgramCounter + 2);
-                state.V[vx].Should().Be((byte) expectedResult);
+                state.V[vx].Should().Be((byte)expectedResult);
             },
             argumentMax);
         }
@@ -434,7 +436,7 @@ namespace Cj.Chip8.Test
                     ProgramCounter = initalProgramCounter;
 
                     var state = Execute(x => x.Shr(vx));
-                    
+
                     state.ProgramCounter.Should().Be(initalProgramCounter + 2);
                     state.V[0x0F].Should().Be(0);
                     state.V[vx].Should().Be(1); // 2 >> 1
@@ -466,8 +468,8 @@ namespace Cj.Chip8.Test
             var argumentCombinations = from register in Enumerable.Range(0, 15)
                                        from argument in Enumerable.Range(0, 15)
                                        where register != argument
-                                       select new {vx = register, vy = argument};
-            
+                                       select new { vx = register, vy = argument };
+
             foreach (var argumentCombination in argumentCombinations)
             {
                 _cpu.State.V[argumentCombination.vx] = 100;
@@ -515,7 +517,7 @@ namespace Cj.Chip8.Test
                 ResetCpuState();
             }
         }
-        
+
         [Test]
         public void Should_shift_vx_left_and_set_vf_to_msb_0_and_increment_program_counter_on_SHL()
         {
@@ -523,7 +525,7 @@ namespace Cj.Chip8.Test
 
             foreach (var register in registers)
             {
-                var vx = (byte) register;
+                var vx = (byte)register;
                 _cpu.State.V[register] = 0x01;
                 _cpu.State.V[0x0F] = 1;
 
@@ -563,10 +565,10 @@ namespace Cj.Chip8.Test
                 ResetCpuState();
             }
         }
-//9xy0 - SNE Vx, Vy
-//Skip next instruction if Vx != Vy.
+        //9xy0 - SNE Vx, Vy
+        //Skip next instruction if Vx != Vy.
 
-//The values of Vx and Vy are compared, and if they are not equal, the program counter is increased by 2.
+        //The values of Vx and Vy are compared, and if they are not equal, the program counter is increased by 2.
         [Test]
         public void Should_not_skip_next_instruction_when_vx_equals_vy_on_Sne()
         {
@@ -596,7 +598,7 @@ namespace Cj.Chip8.Test
         {
             var argumentCombinations = from register in Enumerable.Range(0, 16)
                                        from argument in Enumerable.Range(0, 16)
-                                       where  register != argument
+                                       where register != argument
                                        select new { vx = (byte)register, vy = (byte)argument };
 
             foreach (var argumentCombination in argumentCombinations)
@@ -648,9 +650,33 @@ namespace Cj.Chip8.Test
                 var address = argument;
                 var state = Execute(x => x.JumpV0Offset(address));
 
-                state.ProgramCounter.Should().Be((short) (4 + argument));
+                state.ProgramCounter.Should().Be((short)(4 + argument));
 
                 ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Should_set_vx_to_random_byte_anded_with_kk_on_RND()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 16)
+                                       from argument in Enumerable.Range(0, byte.MaxValue + 1)
+                                       where register != argument
+                                       select new { vx = (byte)register, kk = (byte)argument };
+
+            const byte randomValue = 0xF1;
+            _randomizer.Setup(x => x.GetNext()).Returns(randomValue);
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                const short initialProgramCounter = 4;
+                ProgramCounter = initialProgramCounter;
+
+                var combination = argumentCombination;
+                var state = Execute(x => x.Rnd(combination.vx, combination.kk));
+
+                state.ProgramCounter.Should().Be(initialProgramCounter + 2);
+                state.V[combination.vx].Should().Be((byte) (randomValue & argumentCombination.kk));
             }
         }
 

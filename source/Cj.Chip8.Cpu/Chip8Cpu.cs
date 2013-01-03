@@ -5,10 +5,13 @@ namespace Cj.Chip8.Cpu
     public class Chip8Cpu
     {
         private readonly IDisplay _display;
+        private readonly IRandomizer _randomizer;
 
-        public Chip8Cpu(IDisplay display)
+        public Chip8Cpu(IDisplay display, IRandomizer randomizer)
         {
             _display = display;
+            _randomizer = randomizer;
+
             State = new CpuState();
         }
 
@@ -162,6 +165,12 @@ namespace Cj.Chip8.Cpu
         public void JumpV0Offset(short address)
         {
             State.ProgramCounter = (short) ((address & 0x0FFF) + State.V[0]);  
+        }
+
+        public void Rnd(byte vx, byte kk)
+        {
+            State.V[vx] = (byte) (_randomizer.GetNext() & kk);
+            State.ProgramCounter += 2;
         }
     }
 }
