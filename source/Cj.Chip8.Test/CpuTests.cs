@@ -500,7 +500,7 @@ namespace Cj.Chip8.Test
             {
                 _cpu.State.V[argumentCombination.vx] = 101;
                 _cpu.State.V[argumentCombination.vy] = 100;
-                _cpu.State.V[0x0F] = 0;
+                _cpu.State.V[0x0F] = 1;
 
                 const short initalProgramCounter = 4;
                 ProgramCounter = initalProgramCounter;
@@ -511,6 +511,54 @@ namespace Cj.Chip8.Test
                 state.ProgramCounter.Should().Be(initalProgramCounter + 2);
                 state.V[0x0F].Should().Be(0);
                 state.V[argumentCombination.vx].Should().Be(255);
+
+                ResetCpuState();
+            }
+        }
+        
+        [Test]
+        public void Should_shift_vx_left_and_set_vf_to_msb_0_and_increment_program_counter_on_SHL()
+        {
+            var registers = Enumerable.Range(0, 15);
+
+            foreach (var register in registers)
+            {
+                var vx = (byte) register;
+                _cpu.State.V[register] = 0x01;
+                _cpu.State.V[0x0F] = 1;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Shl(vx));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[0x0F].Should().Be(0);
+                state.V[vx].Should().Be(2);
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Should_shift_vx_left_and_set_vf_to_msb_1_and_increment_program_counter_on_SHL()
+        {
+            var registers = Enumerable.Range(0, 15);
+
+            foreach (var register in registers)
+            {
+                var vx = (byte)register;
+                _cpu.State.V[register] = 0x81;
+                _cpu.State.V[0x0F] = 0;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Shl(vx));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.V[0x0F].Should().Be(1);
+                state.V[vx].Should().Be(2);
 
                 ResetCpuState();
             }

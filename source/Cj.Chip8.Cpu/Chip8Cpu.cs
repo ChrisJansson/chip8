@@ -138,5 +138,13 @@ namespace Cj.Chip8.Cpu
 
             State.ProgramCounter += 2;
         }
+
+        public void Shl(byte vx)
+        {
+            State.V[0x0F] = (byte) (State.V[vx] >> 7);
+            State.V[vx] = (byte) (State.V[vx] << 1);
+
+            State.ProgramCounter += 2;
+        }
     }
 }
