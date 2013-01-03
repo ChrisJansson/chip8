@@ -636,6 +636,24 @@ namespace Cj.Chip8.Test
             }
         }
 
+        [Test]
+        public void Should_set_program_counter_to_v0_plus_nnn_on_Jump()
+        {
+            var arguments = Enumerable.Range(0, 4096).Select(x => (short)x);
+
+            foreach (var argument in arguments)
+            {
+                _cpu.State.V[0x00] = 4;
+
+                var address = argument;
+                var state = Execute(x => x.JumpV0Offset(address));
+
+                state.ProgramCounter.Should().Be((short) (4 + argument));
+
+                ResetCpuState();
+            }
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)

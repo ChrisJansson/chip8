@@ -158,5 +158,10 @@ namespace Cj.Chip8.Cpu
             State.I = (short) (address & 0x0FFF);
             State.ProgramCounter += 2;  
         }
+
+        public void JumpV0Offset(short address)
+        {
+            State.ProgramCounter = (short) ((address & 0x0FFF) + State.V[0]);  
+        }
     }
 }
