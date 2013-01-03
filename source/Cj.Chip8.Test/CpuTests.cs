@@ -563,6 +563,58 @@ namespace Cj.Chip8.Test
                 ResetCpuState();
             }
         }
+//9xy0 - SNE Vx, Vy
+//Skip next instruction if Vx != Vy.
+
+//The values of Vx and Vy are compared, and if they are not equal, the program counter is increased by 2.
+        [Test]
+        public void Should_not_skip_next_instruction_when_vx_equals_vy_on_Sne()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 16)
+                                       from argument in Enumerable.Range(0, 16)
+                                       select new { vx = (byte)register, vy = (byte)argument };
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                _cpu.State.V[argumentCombination.vx] = 100;
+                _cpu.State.V[argumentCombination.vy] = 100;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var combination = argumentCombination;
+                var state = Execute(x => x.Sne(combination.vx, combination.vy));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Should_skip_next_instruction_when_vx_does_not_equal_vy_on_Sne()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 16)
+                                       from argument in Enumerable.Range(0, 16)
+                                       where  register != argument
+                                       select new { vx = (byte)register, vy = (byte)argument };
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                _cpu.State.V[argumentCombination.vx] = 100;
+                _cpu.State.V[argumentCombination.vy] = 101;
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var combination = argumentCombination;
+                var state = Execute(x => x.Sne(combination.vx, combination.vy));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 4);
+
+                ResetCpuState();
+            }
+        }
 
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 

@@ -146,5 +146,11 @@ namespace Cj.Chip8.Cpu
 
             State.ProgramCounter += 2;
         }
+
+        public void Sne(byte vx, byte vy)
+        {
+            var skip = State.V[vx] != State.V[vy];
+            State.ProgramCounter += (short)(skip ? 4 : 2);
+        }
     }
 }
