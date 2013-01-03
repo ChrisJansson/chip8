@@ -616,6 +616,26 @@ namespace Cj.Chip8.Test
             }
         }
 
+        [Test]
+        public void Should_set_value_of_I_to_value_on_LD()
+        {
+            var arguments = Enumerable.Range(0, 4096).Select(x => (short)x);
+
+            foreach (var argument in arguments)
+            {
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var address = argument;
+                var state = Execute(x => x.Ldi(address));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                state.I.Should().Be(argument);
+
+                ResetCpuState();
+            }
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)

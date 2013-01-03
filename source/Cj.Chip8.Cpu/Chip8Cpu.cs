@@ -152,5 +152,11 @@ namespace Cj.Chip8.Cpu
             var skip = State.V[vx] != State.V[vy];
             State.ProgramCounter += (short)(skip ? 4 : 2);
         }
+
+        public void Ldi(short address)
+        {
+            State.I = (short) (address & 0x0FFF);
+            State.ProgramCounter += 2;  
+        }
     }
 }

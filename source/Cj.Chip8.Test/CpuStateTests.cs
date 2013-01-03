@@ -48,5 +48,11 @@ namespace Cj.Chip8.Test
             _cpuState.V.Should().HaveCount(16);
             _cpuState.V.Should().BeOfType<byte[]>();
         }
+
+        [Test]
+        public void Should_have_address_register()
+        {
+            _cpuState.I.GetType().Should().Be(typeof (short));
+        }
     }
 }
