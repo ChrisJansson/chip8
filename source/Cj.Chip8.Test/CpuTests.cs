@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Cj.Chip8.Cpu;
 using Moq;
 using NUnit.Framework;
@@ -383,7 +385,7 @@ namespace Cj.Chip8.Test
                 if (vx.IsCarryRegister() || vy.IsCarryRegister() || vx == vy)
                     return;
 
-                _cpu.State.V[vx] = 101;
+                _cpu.State.V[vx] = 100;
                 _cpu.State.V[vy] = 100;
                 _cpu.State.V[argumentMax] = 0;
 
@@ -394,7 +396,7 @@ namespace Cj.Chip8.Test
 
                 state.ProgramCounter.Should().Be(initalProgramCounter + 2);
                 state.V[argumentMax].Should().Be(1);
-                state.V[vx].Should().Be(1);
+                state.V[vx].Should().Be(0);
             },
             argumentMax);
         }
@@ -427,7 +429,7 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_shift_vx_right_and_set_VF_to_0_and_increment_program_counter_on_SHR()
         {
-            TestForAllRegisters(vx =>
+            TestForAllRegistersExceptVf(vx =>
                 {
                     _cpu.State.V[vx] = 2;
                     _cpu.State.V[0x0F] = 1;
@@ -446,7 +448,7 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_shift_vx_right_and_set_VF_to_1_and_increment_program_counter_on_SHR()
         {
-            TestForAllRegisters(vx =>
+            TestForAllRegistersExceptVf(vx =>
             {
                 _cpu.State.V[vx] = 3;
                 _cpu.State.V[0x0F] = 0;
@@ -460,6 +462,43 @@ namespace Cj.Chip8.Test
                 state.V[0x0F].Should().Be(1);
                 state.V[vx].Should().Be(1); // 2 >> 1
             });
+        }
+
+//        8xy7 - SUBN Vx, Vy
+//Set Vx = Vy - Vx, set VF = NOT borrow.
+
+//If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+        [Test]
+        public void Should_subtract_vx_from_vy_and_set_vx_to_result_and_vf_to_0_on_SUBN()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 15)
+                                       from argument in Enumerable.Range(0, 15)
+                                       where register != argument
+                                       select new {vx = register, vy = argument};
+            
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                _cpu.State.V[argumentCombination.vx] = 100;
+                //_cpu.State.V[argumentCombination.vy] = 
+                //_cpu.State
+
+                //_cpu.State.V[vx] = 3;
+                //_cpu.State.V[0x0F] = 0;
+
+                //const short initalProgramCounter = 4;
+                //ProgramCounter = initalProgramCounter;
+
+                //var state = Execute(x => x.Shr(vx));
+
+                //state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+                //state.V[0x0F].Should().Be(1);
+                //state.V[vx].Should().Be(1); // 2 >> 1
+            }
+
+            TestForAllRegistersExceptVfWithArgumentRange((vx, vy) =>
+                {
+                    
+                }, 255);
         }
 
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
@@ -477,13 +516,21 @@ namespace Cj.Chip8.Test
             }
         }
 
-        private void TestForAllRegisters(Action<byte> asserter)
+        private void TestForAllRegistersExceptVf(Action<byte> asserter)
+        {
+            TestForAllRegistersExceptVfWithArgumentRange((x1, x2) => asserter(x1), 1);
+        }
+
+        private void TestForAllRegistersExceptVfWithArgumentRange(Action<byte, byte> asserter, byte argumentRange)
         {
             const int registers = 16;
             for (var register = 0; register < registers - 1; register++)
             {
-                    asserter((byte)register);
+                for (var i = 0; i <= argumentRange; i++)
+                {
+                    asserter((byte)register, (byte)i);
                     ResetCpuState();
+                }
             }
         }
 
