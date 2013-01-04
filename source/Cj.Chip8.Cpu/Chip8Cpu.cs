@@ -172,5 +172,16 @@ namespace Cj.Chip8.Cpu
             State.V[vx] = (byte) (_randomizer.GetNext() & kk);
             State.ProgramCounter += 2;
         }
+
+        public void Drw(byte vx, byte vy, byte height)
+        {
+            var sprite = new byte[height];
+            Array.Copy(State.Memory, State.I, sprite, 0, height);
+
+            _display.Draw(State.V[vx], State.V[vy], sprite);
+
+            State.V[0x0F] = 0;
+            State.ProgramCounter += 2;
+        }
     }
 }

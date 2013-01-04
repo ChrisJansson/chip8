@@ -676,7 +676,54 @@ namespace Cj.Chip8.Test
                 var state = Execute(x => x.Rnd(combination.vx, combination.kk));
 
                 state.ProgramCounter.Should().Be(initialProgramCounter + 2);
-                state.V[combination.vx].Should().Be((byte) (randomValue & argumentCombination.kk));
+                state.V[combination.vx].Should().Be((byte)(randomValue & argumentCombination.kk));
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Should_draw_sprite_at_vx_vy_with_height_n_and_set_vf_to_0_when_no_pixels_are_flipped_from_set_to_unset_on_DRW()
+        {
+            var argumentCombinations = from vx in Enumerable.Range(0, 15)
+                                       from vy in Enumerable.Range(0, 15)
+                                       from height in Enumerable.Range(0, 16)
+                                       where vx != vy
+                                       select new { vx = (byte)vx, vy = (byte)vy, height = (byte)height };
+
+            var fullSprite = Enumerable.Range(1, 16).Select(x => (byte)x).ToArray();
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                for (var i = 0; i < 16; i++)
+                {
+                    _cpu.State.Memory[0x200 + i] = (byte)(i + 1);
+                }
+
+                _cpu.State.I = 0x200;
+                _cpu.State.V[argumentCombination.vx] = 0x1F;
+                _cpu.State.V[argumentCombination.vy] = 0xF1;
+                _cpu.State.V[0x0F] = 1;
+
+                var actualSprite = new byte[200];
+                _display.Setup(x => x.Draw(0x1F, 0xF1, It.IsAny<byte[]>()))
+                    .Returns(0)
+                    .Callback((byte x, byte y, byte[] sprite) => actualSprite = sprite);
+
+                const short initialProgramCounter = 4;
+                ProgramCounter = initialProgramCounter;
+
+                var combination = argumentCombination;
+                var state = Execute(x => x.Drw(combination.vx, combination.vy, combination.height));
+
+                state.ProgramCounter.Should().Be(initialProgramCounter + 2);
+                state.V[0x0F].Should().Be(0);
+
+                _display.Verify(x => x.Draw(0x1F, 0xF1, It.IsAny<byte[]>()));
+                actualSprite.Length.Should().Be(argumentCombination.height);
+                actualSprite.Should().ContainInOrder(fullSprite.Take(argumentCombination.height).ToList());
+
+                ResetCpuState();
             }
         }
 
