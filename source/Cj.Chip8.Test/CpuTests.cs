@@ -878,7 +878,7 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
-        public void Set_St_should_set_DT_to_the_value_of_vx()
+        public void Set_St_should_set_ST_to_the_value_of_vx()
         {
             var registers = Enumerable.Range(0, 16).Select(x => (byte)x).ToList();
 
@@ -888,7 +888,7 @@ namespace Cj.Chip8.Test
                 _cpu.State.SoundTimer = 0;
 
                 var localRegister = register;
-                var state = Execute(x => x.SetDt(localRegister));
+                var state = Execute(x => x.SetSt(localRegister));
 
                 state.SoundTimer.Should().Be(211);
 
