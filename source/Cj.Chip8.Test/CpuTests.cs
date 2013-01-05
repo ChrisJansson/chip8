@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Cj.Chip8.Cpu;
 using Moq;
 using NUnit.Framework;
@@ -36,15 +36,32 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
+        public void Should_advance_program_counter_by_one_instruction_when_executing_instructions()
+        {
+            AssertProgramCounter(x => x.Cls());
+            AssertProgramCounter(x => x.Drw(0x00, 0x01, 0x02));
+        }
+
+        private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
+        {
+            const short initialProgramCounter = 0x200;
+            _cpu.State.ProgramCounter = initialProgramCounter;
+
+            var methodCallExpression = instructionExecutor.Body as MethodCallExpression;
+            var methodName = methodCallExpression.Method.Name;
+
+            var action = instructionExecutor.Compile();
+            action(_cpu);
+
+            _cpu.State.ProgramCounter.Should().Be(initialProgramCounter + 2, "instruction {0} should advance program counter", methodName);
+        }
+
+        [Test]
         public void Should_clear_display_on_Cls()
         {
-            const short initialProgramCounter = 4;
-            ProgramCounter = initialProgramCounter;
-
             Execute(x => x.Cls);
 
             _display.Verify(x => x.Clear());
-            ProgramCounter.Should().Be(initialProgramCounter + 2);
         }
 
         [Test]
@@ -685,6 +702,8 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_draw_sprite_at_vx_vy_with_height_n_and_set_vf_to_0_when_no_pixels_are_flipped_from_set_to_unset_on_DRW()
         {
+
+
             var argumentCombinations = from vx in Enumerable.Range(0, 15)
                                        from vy in Enumerable.Range(0, 15)
                                        from height in Enumerable.Range(0, 16)
@@ -710,13 +729,9 @@ namespace Cj.Chip8.Test
                     .Returns(0)
                     .Callback((byte x, byte y, byte[] sprite) => actualSprite = sprite);
 
-                const short initialProgramCounter = 4;
-                ProgramCounter = initialProgramCounter;
-
                 var combination = argumentCombination;
                 var state = Execute(x => x.Drw(combination.vx, combination.vy, combination.height));
 
-                state.ProgramCounter.Should().Be(initialProgramCounter + 2);
                 state.V[0x0F].Should().Be(0);
 
                 _display.Verify(x => x.Draw(0x1F, 0xF1, It.IsAny<byte[]>()));

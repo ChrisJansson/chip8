@@ -21,7 +21,7 @@ namespace Cj.Chip8.Cpu
         {
             _display.Clear();
 
-            State.ProgramCounter += 2;
+            //State.ProgramCounter += 2;
         }
 
         public void Jump(short address)
