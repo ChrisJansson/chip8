@@ -44,6 +44,8 @@ namespace Cj.Chip8.Test
             AssertProgramCounter(x => x.Drw(0x00, 0x01, 0x02));
             AssertProgramCounter(x => x.Lddt(0x00));
             AssertProgramCounter(x => x.Ldk(0x00));
+            AssertProgramCounter(x => x.SetDt(0x00));
+            AssertProgramCounter(x => x.SetSt(0x00));
         }
 
         private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
@@ -851,6 +853,44 @@ namespace Cj.Chip8.Test
                 var state = Execute(x => x.Ldk(combination.vx));
 
                 state.V[argumentCombination.vx].Should().Be(argumentCombination.key);
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Set_Dt_should_set_DT_to_the_value_of_vx()
+        {
+            var registers = Enumerable.Range(0, 16).Select(x => (byte) x).ToList();
+
+            foreach (var register in registers)
+            {
+                _cpu.State.V[register] = 211;
+                _cpu.State.DelayTimer = 0;
+
+                var localRegister = register;
+                var state = Execute(x => x.SetDt(localRegister));
+
+                state.DelayTimer.Should().Be(211);
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Set_St_should_set_DT_to_the_value_of_vx()
+        {
+            var registers = Enumerable.Range(0, 16).Select(x => (byte)x).ToList();
+
+            foreach (var register in registers)
+            {
+                _cpu.State.V[register] = 211;
+                _cpu.State.SoundTimer = 0;
+
+                var localRegister = register;
+                var state = Execute(x => x.SetDt(localRegister));
+
+                state.SoundTimer.Should().Be(211);
 
                 ResetCpuState();
             }

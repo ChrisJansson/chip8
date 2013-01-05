@@ -208,16 +208,30 @@ namespace Cj.Chip8.Cpu
                 State.ProgramCounter += 4;
         }
 
-        public void Dt(byte vx)
+        public void Lddt(byte vx)
         {
             State.V[vx] = State.DelayTimer;
             State.ProgramCounter += 2;
         }
 
-        public void K(byte vx)
+        public void Ldk(byte vx)
         {
             var key = _keyboard.WaitForKeyPress();
             State.V[vx] = key;
+
+            State.ProgramCounter += 2;
+        }
+
+        public void SetDt(byte vx)
+        {
+            State.DelayTimer = State.V[vx];
+
+            State.ProgramCounter += 2;
+        }
+
+        public void SetSt(byte vx)
+        {
+            State.SoundTimer = State.V[vx];
 
             State.ProgramCounter += 2;
         }
