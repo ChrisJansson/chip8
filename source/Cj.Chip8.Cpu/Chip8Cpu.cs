@@ -213,5 +213,13 @@ namespace Cj.Chip8.Cpu
             State.V[vx] = State.DelayTimer;
             State.ProgramCounter += 2;
         }
+
+        public void K(byte vx)
+        {
+            var key = _keyboard.WaitForKeyPress();
+            State.V[vx] = key;
+
+            State.ProgramCounter += 2;
+        }
     }
 }

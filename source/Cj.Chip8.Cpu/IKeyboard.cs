@@ -3,5 +3,6 @@
     public interface IKeyboard
     {
         bool IsKeyDown(byte key);
+        byte WaitForKeyPress();
     }
 }
