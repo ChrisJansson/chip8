@@ -25,14 +25,16 @@ namespace Cj.Chip8.Test
         private Chip8Cpu _cpu;
         private Mock<IDisplay> _display;
         private Mock<IRandomizer> _randomizer;
+        private Mock<IKeyboard> _keyboard;
 
         [SetUp]
         public void SetUp()
         {
             _display = new Mock<IDisplay>();
             _randomizer = new Mock<IRandomizer>();
+            _keyboard = new Mock<IKeyboard>();
 
-            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object);
+            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object, _keyboard.Object);
         }
 
         [Test]
@@ -758,6 +760,54 @@ namespace Cj.Chip8.Test
             var state = Execute(x => x.Drw(0x00, 0x00, 0x00));
 
             state.V[0x0F].Should().Be(1);
+        }
+
+        [Test]
+        public void SKP_should_skip_next_instruction_if_key_in_vx_is_pressed_key_is_not_pressed()
+        {
+            var combinations = from register in Enumerable.Range(0, 16)
+                               from key in Enumerable.Range(0, 16)
+                               select new {vx = (byte) register, key = (byte) key};
+
+            foreach (var argumentCombination in combinations)
+            {
+                var combination = argumentCombination;
+
+                _keyboard.Setup(x => x.IsKeyDown(combination.key)).Returns(false);
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+                
+                var state = Execute(x => x.Skp(combination.vx));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 2);
+
+                ResetCpuState();    
+            }
+        }
+
+        [Test]
+        public void SKP_should_skip_next_instruction_if_key_in_vx_is_pressed_key_is_pressed()
+        {
+            var combinations = from register in Enumerable.Range(0, 16)
+                               from key in Enumerable.Range(0, 16)
+                               select new { vx = (byte)register, key = (byte)key };
+
+            foreach (var argumentCombination in combinations)
+            {
+                var combination = argumentCombination;
+
+                _keyboard.Setup(x => x.IsKeyDown(combination.key)).Returns(true);
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Skp(combination.vx));
+
+                state.ProgramCounter.Should().Be(initalProgramCounter + 4);
+
+                ResetCpuState();
+            }
         }
 
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);

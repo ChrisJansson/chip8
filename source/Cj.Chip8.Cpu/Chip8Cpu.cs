@@ -6,11 +6,13 @@ namespace Cj.Chip8.Cpu
     {
         private readonly IDisplay _display;
         private readonly IRandomizer _randomizer;
+        private readonly IKeyboard _keyboard;
 
-        public Chip8Cpu(IDisplay display, IRandomizer randomizer)
+        public Chip8Cpu(IDisplay display, IRandomizer randomizer, IKeyboard keyboard)
         {
             _display = display;
             _randomizer = randomizer;
+            _keyboard = keyboard;
 
             State = new CpuState();
         }
@@ -182,6 +184,17 @@ namespace Cj.Chip8.Cpu
 
             State.V[0x0F] = ereasedPixels;
             State.ProgramCounter += 2;
+        }
+
+        public void Skp(byte vx)
+        {
+            var key = State.V[vx];
+            var isKeyDown = _keyboard.IsKeyDown(key);
+
+            if (isKeyDown)
+                State.ProgramCounter += 4;
+            else
+                State.ProgramCounter += 2;
         }
     }
 }

@@ -42,6 +42,7 @@
     <Compile Include="Chip8Cpu.cs" />
     <Compile Include="CpuState.cs" />
     <Compile Include="IDisplay.cs" />
+    <Compile Include="IKeyboard.cs" />
     <Compile Include="InstructionPattern.cs" />
     <Compile Include="IRandomizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
