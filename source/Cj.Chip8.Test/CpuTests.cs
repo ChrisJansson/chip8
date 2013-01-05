@@ -765,7 +765,7 @@ namespace Cj.Chip8.Test
         [Test]
         [TestCase(2, false)]
         [TestCase(4, true)]
-        public void SKP_should_skip_next_instruction_if_key_in_vx_is_pressed_key_is_not_pressed(short expectedProgramCounterIncrease, bool isKeyDown)
+        public void SKP_should_skip_next_instruction_if_key_in_vx_is_pressed(short expectedProgramCounterIncrease, bool isKeyDown)
         {
             var combinations = from register in Enumerable.Range(0, 16)
                                from key in Enumerable.Range(0, 16)
@@ -782,6 +782,32 @@ namespace Cj.Chip8.Test
 
                 var state = Execute(x => x.Skp(combination.vx));
                 
+                state.ProgramCounter.Should().Be((short)(initalProgramCounter + expectedProgramCounterIncrease));
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        [TestCase(2, true)]
+        [TestCase(4, false)]
+        public void SKPN_should_skip_next_instruction_if_key_in_vx_is_not_pressed(short expectedProgramCounterIncrease, bool isKeyDown)
+        {
+            var combinations = from register in Enumerable.Range(0, 16)
+                               from key in Enumerable.Range(0, 16)
+                               select new { vx = (byte)register, key = (byte)key };
+
+            foreach (var argumentCombination in combinations)
+            {
+                var combination = argumentCombination;
+
+                _keyboard.Setup(x => x.IsKeyDown(combination.key)).Returns(isKeyDown);
+
+                const short initalProgramCounter = 4;
+                ProgramCounter = initalProgramCounter;
+
+                var state = Execute(x => x.Skpn(combination.vx));
+
                 state.ProgramCounter.Should().Be((short)(initalProgramCounter + expectedProgramCounterIncrease));
 
                 ResetCpuState();

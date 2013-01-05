@@ -196,5 +196,16 @@ namespace Cj.Chip8.Cpu
             else
                 State.ProgramCounter += 2;
         }
+
+        public void Skpn(byte vx)
+        {
+            var key = State.V[vx];
+            var isKeyDown = _keyboard.IsKeyDown(key);
+
+            if (isKeyDown)
+                State.ProgramCounter += 2;
+            else
+                State.ProgramCounter += 4;
+        }
     }
 }
