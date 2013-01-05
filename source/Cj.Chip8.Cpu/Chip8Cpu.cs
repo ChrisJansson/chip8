@@ -207,5 +207,11 @@ namespace Cj.Chip8.Cpu
             else
                 State.ProgramCounter += 4;
         }
+
+        public void Dt(byte vx)
+        {
+            State.V[vx] = State.DelayTimer;
+            State.ProgramCounter += 2;
+        }
     }
 }

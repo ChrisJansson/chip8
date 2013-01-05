@@ -42,6 +42,7 @@ namespace Cj.Chip8.Test
         {
             AssertProgramCounter(x => x.Cls());
             AssertProgramCounter(x => x.Drw(0x00, 0x01, 0x02));
+            AssertProgramCounter(x => x.Dt(0x00));
         }
 
         private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
@@ -781,7 +782,7 @@ namespace Cj.Chip8.Test
                 ProgramCounter = initalProgramCounter;
 
                 var state = Execute(x => x.Skp(combination.vx));
-                
+
                 state.ProgramCounter.Should().Be((short)(initalProgramCounter + expectedProgramCounterIncrease));
 
                 ResetCpuState();
@@ -809,6 +810,27 @@ namespace Cj.Chip8.Test
                 var state = Execute(x => x.Skpn(combination.vx));
 
                 state.ProgramCounter.Should().Be((short)(initalProgramCounter + expectedProgramCounterIncrease));
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void DT_should_put_the_value_of_dt_into_vx()
+        {
+
+            var argumentCombinations = from register in Enumerable.Range(0, 16)
+                    from delay in Enumerable.Range(0, byte.MaxValue + 1)
+                    select new { vx = (byte)register, delay = (byte)delay};
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                _cpu.State.DelayTimer = argumentCombination.delay;
+
+                var combination = argumentCombination;
+                var state = Execute(x => x.Dt(combination.vx));
+
+                state.V[argumentCombination.vx].Should().Be(argumentCombination.delay);
 
                 ResetCpuState();
             }
