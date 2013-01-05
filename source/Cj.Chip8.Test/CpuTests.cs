@@ -702,8 +702,6 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_draw_sprite_at_vx_vy_with_height_n_and_set_vf_to_0_when_no_pixels_are_flipped_from_set_to_unset_on_DRW()
         {
-
-
             var argumentCombinations = from vx in Enumerable.Range(0, 15)
                                        from vy in Enumerable.Range(0, 15)
                                        from height in Enumerable.Range(0, 16)
