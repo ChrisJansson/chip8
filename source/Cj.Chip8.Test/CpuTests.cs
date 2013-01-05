@@ -42,8 +42,8 @@ namespace Cj.Chip8.Test
         {
             AssertProgramCounter(x => x.Cls());
             AssertProgramCounter(x => x.Drw(0x00, 0x01, 0x02));
-            AssertProgramCounter(x => x.Dt(0x00));
-            AssertProgramCounter(x => x.K(0x00));
+            AssertProgramCounter(x => x.Lddt(0x00));
+            AssertProgramCounter(x => x.Ldk(0x00));
         }
 
         private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
@@ -828,7 +828,7 @@ namespace Cj.Chip8.Test
                 _cpu.State.DelayTimer = argumentCombination.delay;
 
                 var combination = argumentCombination;
-                var state = Execute(x => x.Dt(combination.vx));
+                var state = Execute(x => x.Lddt(combination.vx));
 
                 state.V[argumentCombination.vx].Should().Be(argumentCombination.delay);
 
@@ -848,7 +848,7 @@ namespace Cj.Chip8.Test
                 _keyboard.Setup(x => x.WaitForKeyPress()).Returns(argumentCombination.key);
 
                 var combination = argumentCombination;
-                var state = Execute(x => x.K(combination.vx));
+                var state = Execute(x => x.Ldk(combination.vx));
 
                 state.V[argumentCombination.vx].Should().Be(argumentCombination.key);
 
