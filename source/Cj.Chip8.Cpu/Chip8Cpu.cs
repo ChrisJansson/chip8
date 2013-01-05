@@ -178,9 +178,9 @@ namespace Cj.Chip8.Cpu
             var sprite = new byte[height];
             Array.Copy(State.Memory, State.I, sprite, 0, height);
 
-            _display.Draw(State.V[vx], State.V[vy], sprite);
+            var ereasedPixels = _display.Draw(State.V[vx], State.V[vy], sprite);
 
-            State.V[0x0F] = 0;
+            State.V[0x0F] = ereasedPixels;
             State.ProgramCounter += 2;
         }
     }

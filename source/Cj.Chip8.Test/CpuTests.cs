@@ -700,10 +700,10 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
-        public void Should_draw_sprite_at_vx_vy_with_height_n_and_set_vf_to_0_when_no_pixels_are_flipped_from_set_to_unset_on_DRW()
+        public void DRW_should_draw_sprite_at_i_with_coordinates_vx_vy_and_height_n()
         {
-            var argumentCombinations = from vx in Enumerable.Range(0, 15)
-                                       from vy in Enumerable.Range(0, 15)
+            var argumentCombinations = from vx in Enumerable.Range(0, 16)
+                                       from vy in Enumerable.Range(0, 16)
                                        from height in Enumerable.Range(0, 16)
                                        where vx != vy
                                        select new { vx = (byte)vx, vy = (byte)vy, height = (byte)height };
@@ -720,24 +720,44 @@ namespace Cj.Chip8.Test
                 _cpu.State.I = 0x200;
                 _cpu.State.V[argumentCombination.vx] = 0x1F;
                 _cpu.State.V[argumentCombination.vy] = 0xF1;
-                _cpu.State.V[0x0F] = 1;
 
                 var actualSprite = new byte[200];
                 _display.Setup(x => x.Draw(0x1F, 0xF1, It.IsAny<byte[]>()))
-                    .Returns(0)
                     .Callback((byte x, byte y, byte[] sprite) => actualSprite = sprite);
 
                 var combination = argumentCombination;
                 var state = Execute(x => x.Drw(combination.vx, combination.vy, combination.height));
 
                 state.V[0x0F].Should().Be(0);
-
-                _display.Verify(x => x.Draw(0x1F, 0xF1, It.IsAny<byte[]>()));
                 actualSprite.Length.Should().Be(argumentCombination.height);
                 actualSprite.Should().ContainInOrder(fullSprite.Take(argumentCombination.height).ToList());
 
                 ResetCpuState();
             }
+        }
+
+        [Test]
+        public void DRW_should_set_vf_to_display_draw_return_0()
+        {
+            _display.Setup(x => x.Draw(It.IsAny<byte>(), It.IsAny<byte>(), It.IsAny<byte[]>())).Returns(0x00);
+
+            _cpu.State.V[0x0F] = 1;
+
+            var state = Execute(x => x.Drw(0x00, 0x00, 0x00));
+
+            state.V[0x0F].Should().Be(0);
+        }
+
+        [Test]
+        public void DRW_should_set_vf_to_display_draw_return_1()
+        {
+            _display.Setup(x => x.Draw(It.IsAny<byte>(), It.IsAny<byte>(), It.IsAny<byte[]>())).Returns(0x01);
+
+            _cpu.State.V[0x0F] = 0;
+
+            var state = Execute(x => x.Drw(0x00, 0x00, 0x00));
+
+            state.V[0x0F].Should().Be(1);
         }
 
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
