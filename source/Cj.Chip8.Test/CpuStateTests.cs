@@ -54,5 +54,17 @@ namespace Cj.Chip8.Test
         {
             _cpuState.I.GetType().Should().Be(typeof (short));
         }
+
+        [Test]
+        public void Should_have_delay_timer()
+        {
+            _cpuState.DelayTimer.GetType().Should().Be(typeof(byte));
+        }
+
+        [Test]
+        public void Should_have_sound_timer()
+        {
+            _cpuState.DelayTimer.GetType().Should().Be(typeof(byte));
+        }
     }
 }

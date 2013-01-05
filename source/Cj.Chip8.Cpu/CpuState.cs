@@ -9,5 +9,8 @@
         public short[] Stack = new short[16];
         public byte[] V = new byte[16];
         public short I;
+
+        public byte SoundTimer;
+        public byte DelayTimer;
     }
 }
