@@ -47,6 +47,7 @@ namespace Cj.Chip8.Test
             AssertProgramCounter(x => x.SetDt(0x00));
             AssertProgramCounter(x => x.SetSt(0x00));
             AssertProgramCounter(x => x.AddI(0x00));
+            AssertProgramCounter(x => x.Ldf(0x00));
         }
 
         private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
@@ -912,6 +913,27 @@ namespace Cj.Chip8.Test
                 var state = Execute(x => x.AddI(localRegister));
 
                 state.I.Should().Be(723);
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void LDF_sprite_address_corresponding_to_sprite_in_vx_should_be_stored_in_I()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 16)
+                            from sprite in Enumerable.Range(0, 16)
+                            select new {vx = (byte) register, sprite = (byte) sprite};
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                _cpu.State.I = 512;
+                _cpu.State.V[argumentCombination.vx] = argumentCombination.sprite;
+
+                var localRegister = argumentCombination.vx;
+                var state = Execute(x => x.Ldf(localRegister));
+
+                state.I.Should().Be((short) (argumentCombination.sprite*5));
 
                 ResetCpuState();
             }

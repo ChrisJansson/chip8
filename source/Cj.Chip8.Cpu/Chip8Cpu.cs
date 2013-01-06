@@ -95,7 +95,7 @@ namespace Cj.Chip8.Cpu
 
         public void Or(byte vx, byte vy)
         {
-            State.V[vx] = (byte) (State.V[vx] | State.V[vy]);
+            State.V[vx] = (byte)(State.V[vx] | State.V[vy]);
             State.ProgramCounter += 2;
         }
 
@@ -115,39 +115,39 @@ namespace Cj.Chip8.Cpu
         {
             var result = State.V[vx] + State.V[vy];
             State.V[vx] = (byte)(result & 0xFF);
-            State.V[0x0F] = (byte) (result > byte.MaxValue ? 1 : 0);
+            State.V[0x0F] = (byte)(result > byte.MaxValue ? 1 : 0);
 
             State.ProgramCounter += 2;
         }
 
         public void Sub(byte vx, byte vy)
         {
-            State.V[0x0F] = (byte) (State.V[vy] > State.V[vx] ? 0 : 1);
-            State.V[vx] = (byte) (State.V[vx] - State.V[vy]);
+            State.V[0x0F] = (byte)(State.V[vy] > State.V[vx] ? 0 : 1);
+            State.V[vx] = (byte)(State.V[vx] - State.V[vy]);
 
             State.ProgramCounter += 2;
         }
 
         public void Shr(byte vx)
         {
-            State.V[0x0F] = (byte) (State.V[vx] & 0x01);
-            State.V[vx] = (byte) (State.V[vx] >> 1);
+            State.V[0x0F] = (byte)(State.V[vx] & 0x01);
+            State.V[vx] = (byte)(State.V[vx] >> 1);
 
             State.ProgramCounter += 2;
         }
 
         public void Subn(int vx, int vy)
         {
-            State.V[0x0F] = (byte) (State.V[vx] > State.V[vy] ? 0 : 1);
-            State.V[vx] = (byte) (State.V[vy] - State.V[vx]);
+            State.V[0x0F] = (byte)(State.V[vx] > State.V[vy] ? 0 : 1);
+            State.V[vx] = (byte)(State.V[vy] - State.V[vx]);
 
             State.ProgramCounter += 2;
         }
 
         public void Shl(byte vx)
         {
-            State.V[0x0F] = (byte) (State.V[vx] >> 7);
-            State.V[vx] = (byte) (State.V[vx] << 1);
+            State.V[0x0F] = (byte)(State.V[vx] >> 7);
+            State.V[vx] = (byte)(State.V[vx] << 1);
 
             State.ProgramCounter += 2;
         }
@@ -160,18 +160,18 @@ namespace Cj.Chip8.Cpu
 
         public void Ldi(short address)
         {
-            State.I = (short) (address & 0x0FFF);
-            State.ProgramCounter += 2;  
+            State.I = (short)(address & 0x0FFF);
+            State.ProgramCounter += 2;
         }
 
         public void JumpV0Offset(short address)
         {
-            State.ProgramCounter = (short) ((address & 0x0FFF) + State.V[0]);  
+            State.ProgramCounter = (short)((address & 0x0FFF) + State.V[0]);
         }
 
         public void Rnd(byte vx, byte kk)
         {
-            State.V[vx] = (byte) (_randomizer.GetNext() & kk);
+            State.V[vx] = (byte)(_randomizer.GetNext() & kk);
             State.ProgramCounter += 2;
         }
 
@@ -240,6 +240,12 @@ namespace Cj.Chip8.Cpu
         {
             State.I += State.V[vx];
 
+            State.ProgramCounter += 2;
+        }
+
+        public void Ldf(byte vx)
+        {
+            State.I = (short) (State.V[vx] * 5);
             State.ProgramCounter += 2;
         }
     }
