@@ -46,6 +46,7 @@ namespace Cj.Chip8.Test
             AssertProgramCounter(x => x.Ldk(0x00));
             AssertProgramCounter(x => x.SetDt(0x00));
             AssertProgramCounter(x => x.SetSt(0x00));
+            AssertProgramCounter(x => x.AddI(0x00));
         }
 
         private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
@@ -891,6 +892,26 @@ namespace Cj.Chip8.Test
                 var state = Execute(x => x.SetSt(localRegister));
 
                 state.SoundTimer.Should().Be(211);
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Add_I_should_add_the_value_of_vx_to_i()
+        {
+            var registers = Enumerable.Range(0, 16).Select(x => (byte)x).ToList();
+
+            foreach (var register in registers)
+            {
+                _cpu.State.I = 512;
+                _cpu.State.V[register] = 211;
+                _cpu.State.SoundTimer = 0;
+
+                var localRegister = register;
+                var state = Execute(x => x.AddI(localRegister));
+
+                state.I.Should().Be(723);
 
                 ResetCpuState();
             }

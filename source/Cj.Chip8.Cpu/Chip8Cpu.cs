@@ -235,5 +235,12 @@ namespace Cj.Chip8.Cpu
 
             State.ProgramCounter += 2;
         }
+
+        public void AddI(byte vx)
+        {
+            State.I += State.V[vx];
+
+            State.ProgramCounter += 2;
+        }
     }
 }
