@@ -247,7 +247,19 @@ namespace Cj.Chip8.Cpu
 
         public void Ldf(byte vx)
         {
-            State.I = (short) (State.V[vx] * 5);
+            State.I = (short)(State.V[vx] * 5);
+            State.ProgramCounter += 2;
+        }
+
+        public void Ldb(byte vx)
+        {
+            var value = State.V[vx];
+            var result = _bcdConverter.ConvertToBcd(value);
+
+            State.Memory[State.I + 0] = result[0];
+            State.Memory[State.I + 1] = result[1];
+            State.Memory[State.I + 2] = result[2];
+
             State.ProgramCounter += 2;
         }
     }

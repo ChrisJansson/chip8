@@ -42,6 +42,8 @@ namespace Cj.Chip8.Test
         [Test]
         public void Should_advance_program_counter_by_one_instruction_when_executing_instructions()
         {
+            _bcdConverter.Setup(x => x.ConvertToBcd(It.IsAny<byte>())).Returns(new byte[] { 1, 2, 3 });
+
             AssertProgramCounter(x => x.Cls());
             AssertProgramCounter(x => x.Drw(0x00, 0x01, 0x02));
             AssertProgramCounter(x => x.Lddt(0x00));
@@ -50,6 +52,7 @@ namespace Cj.Chip8.Test
             AssertProgramCounter(x => x.SetSt(0x00));
             AssertProgramCounter(x => x.AddI(0x00));
             AssertProgramCounter(x => x.Ldf(0x00));
+            AssertProgramCounter(x => x.Ldb(0x00));
         }
 
         private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
@@ -865,7 +868,7 @@ namespace Cj.Chip8.Test
         [Test]
         public void Set_Dt_should_set_DT_to_the_value_of_vx()
         {
-            var registers = Enumerable.Range(0, 16).Select(x => (byte) x).ToList();
+            var registers = Enumerable.Range(0, 16).Select(x => (byte)x).ToList();
 
             foreach (var register in registers)
             {
@@ -924,8 +927,8 @@ namespace Cj.Chip8.Test
         public void LDF_sprite_address_corresponding_to_sprite_in_vx_should_be_stored_in_I()
         {
             var argumentCombinations = from register in Enumerable.Range(0, 16)
-                            from sprite in Enumerable.Range(0, 16)
-                            select new {vx = (byte) register, sprite = (byte) sprite};
+                                       from sprite in Enumerable.Range(0, 16)
+                                       select new { vx = (byte)register, sprite = (byte)sprite };
 
             foreach (var argumentCombination in argumentCombinations)
             {
@@ -935,7 +938,54 @@ namespace Cj.Chip8.Test
                 var localRegister = argumentCombination.vx;
                 var state = Execute(x => x.Ldf(localRegister));
 
-                state.I.Should().Be((short) (argumentCombination.sprite*5));
+                state.I.Should().Be((short)(argumentCombination.sprite * 5));
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void LDB_converts_value_in_vx_to_bcd()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 16)
+                                       from value in Enumerable.Range(0, 256)
+                                       select new { vx = (byte)register, value = (byte)value };
+
+            foreach (var argumentCombination in argumentCombinations)
+            {
+                _cpu.State.V[argumentCombination.vx] = argumentCombination.value;
+                _bcdConverter.Setup(x => x.ConvertToBcd(It.IsAny<byte>())).Returns(new byte[] { 1, 2, 3 });
+
+                var localRegister = argumentCombination.vx;
+                Execute(x => x.Ldb(localRegister));
+
+                var combination = argumentCombination;
+                _bcdConverter.Verify(x => x.ConvertToBcd(combination.value));
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void LDB_stores_value_in_I()
+        {
+            var argumentCombinations = from i in Enumerable.Range(0, 0xFFF - 3)
+                                       select (short)i;
+
+            foreach (var i in argumentCombinations)
+            {
+                _cpu.State.I = i;
+                
+                const byte valueToConvert = (byte)123;
+
+                _cpu.State.V[0] = valueToConvert;
+                _bcdConverter.Setup(x => x.ConvertToBcd(valueToConvert)).Returns(new byte[] { 1, 2, 3 });
+
+                var state = Execute(x => x.Ldb(0));
+
+                state.Memory[i + 0].Should().Be(1);
+                state.Memory[i + 1].Should().Be(2);
+                state.Memory[i + 2].Should().Be(3);
 
                 ResetCpuState();
             }
