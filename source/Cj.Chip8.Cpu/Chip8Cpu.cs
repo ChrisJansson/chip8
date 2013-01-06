@@ -273,5 +273,15 @@ namespace Cj.Chip8.Cpu
 
             State.ProgramCounter += 2;
         }
+
+        public void CopyMemory(byte vx)
+        {
+            for (var register = 0; register <= vx; register++)
+            {
+                State.V[register] = State.Memory[State.I + register];
+            }
+
+            State.ProgramCounter += 2;
+        }
     }
 }

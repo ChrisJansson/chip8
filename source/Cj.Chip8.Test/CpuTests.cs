@@ -54,6 +54,7 @@ namespace Cj.Chip8.Test
             AssertProgramCounter(x => x.Ldf(0x00));
             AssertProgramCounter(x => x.Ldb(0x00));
             AssertProgramCounter(x => x.CopyRegisters(0x00));
+            AssertProgramCounter(x => x.CopyMemory(0x00));
         }
 
         private void AssertProgramCounter(Expression<Action<Chip8Cpu>> instructionExecutor)
@@ -1013,6 +1014,33 @@ namespace Cj.Chip8.Test
                 for (var i = 0; i <= register; i++)
                 {
                     state.Memory[0x200 + i].Should().Be((byte) (100 + i));
+                }
+
+                ResetCpuState();
+            }
+        }
+
+        [Test]
+        public void Copy_memory_into_registers_should_copy_from_memory_into_registers()
+        {
+            var argumentCombinations = from register in Enumerable.Range(0, 16)
+                                       select (byte)register;
+
+            foreach (var register in argumentCombinations)
+            {
+                for (var i = 0; i < 16; i++)
+                {
+                    _cpu.State.Memory[0x200 + i] = (byte)(100 + i);
+                }
+
+                _cpu.State.I = 0x200;
+
+                var register1 = register;
+                var state = Execute(x => x.CopyMemory(register1));
+
+                for (var i = 0; i <= register; i++)
+                {
+                    state.V[i].Should().Be((byte)(100 + i));
                 }
 
                 ResetCpuState();
