@@ -26,6 +26,7 @@ namespace Cj.Chip8.Test
         private Mock<IDisplay> _display;
         private Mock<IRandomizer> _randomizer;
         private Mock<IKeyboard> _keyboard;
+        private Mock<IBcdConverter> _bcdConverter;
 
         [SetUp]
         public void SetUp()
@@ -33,8 +34,9 @@ namespace Cj.Chip8.Test
             _display = new Mock<IDisplay>();
             _randomizer = new Mock<IRandomizer>();
             _keyboard = new Mock<IKeyboard>();
+            _bcdConverter = new Mock<IBcdConverter>();
 
-            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object, _keyboard.Object);
+            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object, _keyboard.Object, _bcdConverter.Object);
         }
 
         [Test]

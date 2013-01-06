@@ -7,12 +7,14 @@ namespace Cj.Chip8.Cpu
         private readonly IDisplay _display;
         private readonly IRandomizer _randomizer;
         private readonly IKeyboard _keyboard;
+        private readonly IBcdConverter _bcdConverter;
 
-        public Chip8Cpu(IDisplay display, IRandomizer randomizer, IKeyboard keyboard)
+        public Chip8Cpu(IDisplay display, IRandomizer randomizer, IKeyboard keyboard, IBcdConverter bcdConverter)
         {
             _display = display;
             _randomizer = randomizer;
             _keyboard = keyboard;
+            _bcdConverter = bcdConverter;
 
             State = new CpuState();
         }

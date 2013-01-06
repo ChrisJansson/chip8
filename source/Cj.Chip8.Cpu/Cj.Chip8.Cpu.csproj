@@ -39,8 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BcdConverter.cs" />
     <Compile Include="Chip8Cpu.cs" />
     <Compile Include="CpuState.cs" />
+    <Compile Include="IBcdConverter.cs" />
     <Compile Include="IDisplay.cs" />
     <Compile Include="IKeyboard.cs" />
     <Compile Include="InstructionPattern.cs" />
