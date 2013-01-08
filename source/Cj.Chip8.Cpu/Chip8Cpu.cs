@@ -2,7 +2,7 @@
 
 namespace Cj.Chip8.Cpu
 {
-    public class Chip8Cpu
+    public class Chip8Cpu : IChip8Cpu
     {
         private readonly IDisplay _display;
         private readonly IRandomizer _randomizer;
