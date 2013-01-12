@@ -69,6 +69,18 @@
                             break;
                     }
                     break;
+                case 0x9000:
+                    cpu.Sne((byte)((instruction >> 8) & 0xF), (byte)((instruction >> 4) & 0xF));
+                    break;
+                case 0xA000:
+                    cpu.Ldi((short) (instruction & 0x0FFF));
+                    break;
+                case 0xB000:
+                    cpu.JumpV0Offset((short)(instruction & 0x0FFF));
+                    break;
+                case 0xC000:
+                    cpu.Rnd((byte) ((instruction >> 8) & 0xF), (byte) (instruction & 0xFF));
+                    break;
             }
         }
     }
