@@ -72,6 +72,214 @@ namespace Cj.Chip8.Test
             }
         }
 
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_3xkk()
+        {
+            var arguments = from register in CreateRange(0xF)
+                            from constant in CreateRange(0xFF)
+                            select new {register = (byte)register, constant = (byte)constant};
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x3000 | (argument.register << 8) | argument.constant;
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.SeConstant(argument1.register, argument1.constant));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_4xkk()
+        {
+            var arguments = from register in CreateRange(0xF)
+                            from constant in CreateRange(0xFF)
+                            select new { register = (byte)register, constant = (byte)constant };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x4000 | (argument.register << 8) | argument.constant;
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.SneConstant(argument1.register, argument1.constant));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_5xy0()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x5000 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Se(argument1.vx, argument1.vy));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_6xkk()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from kk in CreateRange(0xFF)
+                            select new { vx = (byte)vx, kk = (byte)kk };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x6000 | (argument.vx << 8) | argument.kk;
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.LdConstant(argument1.vx, argument1.kk));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_7xkk()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from kk in CreateRange(0xFF)
+                            select new { vx = (byte)vx, kk = (byte)kk };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x7000 | (argument.vx << 8) | argument.kk;
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.AddConstant(argument1.vx, argument1.kk));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy0()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8000 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Ld(argument1.vx, argument1.vy));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy1()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8001 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Or(argument1.vx, argument1.vy));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy2()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8002 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.And(argument1.vx, argument1.vy));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy3()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8003 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Xor(argument1.vx, argument1.vy));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy4()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8004 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.AddCarry(argument1.vx, argument1.vy));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy5()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8005 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Sub(argument1.vx, argument1.vy));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy6()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8006 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Shr(argument1.vx));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xy7()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x8007 | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Subn(argument1.vx, argument1.vy));
+            }
+        }
+
         private void ExecuteAndVerify(short instruction, Expression<Action<IChip8Cpu>> verifier)
         {
             _cpu.Setup(verifier);
