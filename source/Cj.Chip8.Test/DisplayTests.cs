@@ -103,13 +103,64 @@ namespace Cj.Chip8.Test
             result.Should().Be(1);
         }
 
+        [Test]
+        public void Draw_should_wrap_horizontally()
+        {
+            var sprite = new byte[]
+                {
+                    0xF1
+                };
+
+            _display.Draw(62, 0, sprite);
+
+            _display.Pixels[62].Should().Be(1);
+            _display.Pixels[63].Should().Be(1);
+            _display.Pixels[0].Should().Be(1);
+            _display.Pixels[1].Should().Be(1);
+            _display.Pixels[2].Should().Be(0);
+            _display.Pixels[3].Should().Be(0);
+            _display.Pixels[4].Should().Be(0);
+            _display.Pixels[5].Should().Be(1);
+        }
+
+        [Test]
+        public void Draw_should_wrap_vertically()
+        {
+            var sprite = new byte[]
+                {
+                    0xF1,
+                    0x3E
+                };
+
+            _display.Draw(0, 31, sprite);
+
+            AssertRow(0, 31, 0xF1);
+            AssertRow(0, 0, 0x3E);
+        }
+
+        [Test]
+        public void Draw_should_wrap_horizontally_and_vertically()
+        {
+            var sprite = new byte[]
+                {
+                    0xF1,
+                    0x3E
+                };
+
+            _display.Draw(60, 31, sprite);
+
+            AssertRow(60, 31, 0xF1);
+            AssertRow(60, 0, 0x3E);
+        }
+
         private void AssertRow(int x, int y, byte sprite)
         {
-            var offset = x + y * 32;
+            var row = y * 64;
 
             for (var i = 0; i < 8; i++)
             {
-                var pixel = _display.Pixels[offset + i];
+                var offset = ((x + i)%64) + row;
+                var pixel = _display.Pixels[offset];
                 var pixelValue = (sprite >> (7 - i)) & 0x01;
 
                 pixel.Should().Be((byte)pixelValue);
