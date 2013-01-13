@@ -53,6 +53,7 @@
     <Compile Include="BcdConverterTests.cs" />
     <Compile Include="CpuStateTests.cs" />
     <Compile Include="CpuTests.cs" />
+    <Compile Include="DisplayTests.cs" />
     <Compile Include="InstructionDecoderTests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

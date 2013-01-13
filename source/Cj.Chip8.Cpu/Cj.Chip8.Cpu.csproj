@@ -42,6 +42,7 @@
     <Compile Include="BcdConverter.cs" />
     <Compile Include="Chip8Cpu.cs" />
     <Compile Include="CpuState.cs" />
+    <Compile Include="Display.cs" />
     <Compile Include="IBcdConverter.cs" />
     <Compile Include="IChip8Cpu.cs" />
     <Compile Include="IDisplay.cs" />
