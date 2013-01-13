@@ -64,6 +64,7 @@ namespace Cj.Chip8.Cpu
         public void Ret()
         {
             State.ProgramCounter = State.Stack[--State.StackPointer];
+            State.ProgramCounter += 2;
         }
 
         public void Se(byte vx, byte vy)

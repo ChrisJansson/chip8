@@ -45,6 +45,7 @@ namespace Cj.Chip8.Test
             _bcdConverter.Setup(x => x.ConvertToBcd(It.IsAny<byte>())).Returns(new byte[] { 1, 2, 3 });
 
             AssertProgramCounter(x => x.Cls());
+            AssertProgramCounter(x => x.Ret());
             AssertProgramCounter(x => x.Drw(0x00, 0x01, 0x02));
             AssertProgramCounter(x => x.Lddt(0x00));
             AssertProgramCounter(x => x.Ldk(0x00));
@@ -61,6 +62,9 @@ namespace Cj.Chip8.Test
         {
             const short initialProgramCounter = 0x200;
             _cpu.State.ProgramCounter = initialProgramCounter;
+            
+            _cpu.State.StackPointer = 1;
+            _cpu.State.Stack[0] = initialProgramCounter;
 
             var methodCallExpression = instructionExecutor.Body as MethodCallExpression;
             var methodName = methodCallExpression.Method.Name;
