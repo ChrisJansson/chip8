@@ -350,10 +350,164 @@ namespace Cj.Chip8.Test
 
             foreach (var argument in arguments)
             {
-                var instruction = 0xC000 | (argument.vx << 8) | (argument.vy << 4) | argument.n;
+                var instruction = 0xD000 | (argument.vx << 8) | (argument.vy << 4) | argument.n;
 
                 var argument1 = argument;
                 ExecuteAndVerify((short)instruction, x => x.Drw(argument1.vx, argument1.vy, argument1.n));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Ex9E()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte) x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xE09E | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Skp(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_ExA1()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xE0A1 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Sknp(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx07()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF007 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Lddt(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx0A()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF00A | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Ldk(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx15()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF015 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.SetDt(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx18()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF018 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.SetSt(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx1E()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF01E | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.AddI(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx29()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF029 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Ldf(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx33()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF033 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Ldb(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx55()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF055 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.CopyRegisters(argument1));
+            }
+        }
+
+        [Test]
+        public void Should_call_cpu_correctly_when_decoding_Fx65()
+        {
+            var arguments = CreateRange(0xF).Select(x => (byte)x).ToList();
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0xF065 | (argument << 8);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.CopyMemory(argument1));
             }
         }
 

@@ -26,7 +26,7 @@
         void Rnd(byte vx, byte kk);
         void Drw(byte vx, byte vy, byte height);
         void Skp(byte vx);
-        void Skpn(byte vx);
+        void Sknp(byte vx);
         void Lddt(byte vx);
         void Ldk(byte vx);
         void SetDt(byte vx);

@@ -199,7 +199,7 @@ namespace Cj.Chip8.Cpu
                 State.ProgramCounter += 2;
         }
 
-        public void Skpn(byte vx)
+        public void Sknp(byte vx)
         {
             var key = State.V[vx];
             var isKeyDown = _keyboard.IsKeyDown(key);

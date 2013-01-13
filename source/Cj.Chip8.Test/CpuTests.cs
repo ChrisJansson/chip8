@@ -819,7 +819,7 @@ namespace Cj.Chip8.Test
                 const short initalProgramCounter = 4;
                 ProgramCounter = initalProgramCounter;
 
-                var state = Execute(x => x.Skpn(combination.vx));
+                var state = Execute(x => x.Sknp(combination.vx));
 
                 state.ProgramCounter.Should().Be((short)(initalProgramCounter + expectedProgramCounterIncrease));
 
