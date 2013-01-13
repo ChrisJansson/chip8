@@ -91,7 +91,7 @@ namespace Cj.Chip8.Test
 
             var state = Execute(x => x.Ret);
 
-            ProgramCounter.Should().Be(4);
+            ProgramCounter.Should().Be(6);
             state.StackPointer.Should().Be(0);
         }
 
