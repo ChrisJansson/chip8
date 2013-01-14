@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Cj.Chip8.Cpu;
 using Microsoft.Win32;
+using System.Linq;
 
 namespace Emulator
 {
@@ -62,7 +64,7 @@ namespace Emulator
         {
             var display = new Display();
             var randomizer = new Randomizer();
-            var wpfKeyboard = new WpfKeyboard();
+            var wpfKeyboard = new WpfKeyboard(View);
             var bcdConverter = new BcdConverter();
             var chip8Cpu = new Chip8Cpu(display, randomizer, wpfKeyboard, bcdConverter);
 
@@ -70,7 +72,6 @@ namespace Emulator
             chip8Cpu.State.ProgramCounter = 0x200;
 
             var displayAdapter = new DisplayAdapter();
-
 
             var thread = new Thread(() =>
                 {
@@ -84,8 +85,7 @@ namespace Emulator
                             display.Dirty = false;
                         }
 
-                        
-                        Thread.Sleep(0);
+                        Thread.Sleep(1);
                     }
                 });
 
@@ -116,9 +116,7 @@ namespace Emulator
 
     public class WpfKeyboard : IKeyboard
     {
-        private readonly Dictionary<byte, Key> _keys;
-
-        public WpfKeyboard()
+        public WpfKeyboard(FrameworkElement framework)
         {
             _keys = new Dictionary<byte, Key>
                 {
@@ -139,17 +137,49 @@ namespace Emulator
                     { 0x0E, Key.E},
                     { 0x0F, Key.F},
                 };
+
+            _framework = framework;
+            _autoResetEvent = new AutoResetEvent(false);
+
+            Keyboard.AddKeyDownHandler(_framework, Handler);
         }
+
+        private void Handler(object sender, KeyEventArgs keyEventArgs)
+        {
+            lock (this)
+            {
+                if (_keys.ContainsValue(keyEventArgs.Key))
+                {
+                    _key = keyEventArgs.Key;
+                    _autoResetEvent.Set();    
+                }
+            }
+            
+        }
+
+        private readonly Dictionary<byte, Key> _keys;
+        private readonly FrameworkElement _framework;
+        private readonly AutoResetEvent _autoResetEvent;
+        private Key _key;
 
         public bool IsKeyDown(byte key)
         {
             var keyValue = _keys[key];
-            return Keyboard.IsKeyDown(keyValue);
+
+            bool isKeyDown = false;
+            _framework.Dispatcher.Invoke(() => isKeyDown = Keyboard.IsKeyDown(keyValue));
+
+            return isKeyDown;
         }
 
         public byte WaitForKeyPress()
         {
-            throw new NotImplementedException();
+            _autoResetEvent.Reset();
+            _autoResetEvent.WaitOne();
+            lock (this)
+            {
+                return _keys.Single(x => x.Value == _key).Key;
+            }
         }
     }
 }

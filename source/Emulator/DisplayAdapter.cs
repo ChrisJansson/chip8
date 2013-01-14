@@ -21,7 +21,9 @@ namespace Emulator
                 }
             }
 
-            return BitmapSource.Create(64, 32, 96, 96, PixelFormats.Indexed8, BitmapPalettes.BlackAndWhite, pixels, 64);
+
+            var bitmapPalette = new BitmapPalette(new List<Color> {Colors.DarkBlue, Colors.CornflowerBlue});
+            return BitmapSource.Create(64, 32, 96, 96, PixelFormats.Indexed8, bitmapPalette, pixels, 64);
         }
     }
 }
