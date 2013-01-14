@@ -281,6 +281,22 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
+        public void Should_call_cpu_correctly_when_decoding_8xyE()
+        {
+            var arguments = from vx in CreateRange(0xF)
+                            from vy in CreateRange(0xF)
+                            select new { vx = (byte)vx, vy = (byte)vy };
+
+            foreach (var argument in arguments)
+            {
+                var instruction = 0x800e | (argument.vx << 8) | (argument.vy << 4);
+
+                var argument1 = argument;
+                ExecuteAndVerify((short)instruction, x => x.Shl(argument1.vx));
+            }
+        }
+
+        [Test]
         public void Should_call_cpu_correctly_when_decoding_9xy0()
         {
             var arguments = from vx in CreateRange(0xF)

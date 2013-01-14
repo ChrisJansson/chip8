@@ -67,6 +67,9 @@
                         case 0x0007:
                             cpu.Subn((byte)((instruction >> 8) & 0xF), (byte)((instruction >> 4) & 0xF));
                             break;
+                        case 0x000E:
+                            cpu.Shl((byte)((instruction >> 8) & 0xF));
+                            break;
                     }
                     break;
                 case 0x9000:
