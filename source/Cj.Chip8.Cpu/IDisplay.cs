@@ -4,5 +4,6 @@
     {
         void Clear();
         byte Draw(byte x, byte y, byte[] sprite);
+        byte[] Pixels { get; }
     }
 }

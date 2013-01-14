@@ -1,0 +1,12 @@
+﻿<Window x:Class="Emulator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow"
+        Background="Gray"
+        SizeToContent="WidthAndHeight">
+    <StackPanel>
+        <Image Source="{Binding BitmapSource}" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" Width="640" Height="320"/>    
+        <Button Command="{Binding Load}" />
+    </StackPanel>
+    
+</Window>

@@ -7,6 +7,8 @@
 
         private readonly byte[] _pixels = new byte[2048];
 
+        public bool Dirty { get; set; }
+
         public byte[] Pixels
         {
             get { return _pixels; }
@@ -14,6 +16,8 @@
 
         public void Clear()
         {
+            Dirty = true;
+
             for (var i = 0; i < Pixels.Length; i++)
             {
                 Pixels[i] = 0;
@@ -22,6 +26,8 @@
 
         public byte Draw(byte x, byte y, byte[] sprite)
         {
+            Dirty = true;
+
             byte ereasedPixel = 0;
 
             for (var i = 0; i < sprite.Length; i++)
