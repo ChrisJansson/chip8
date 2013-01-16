@@ -8,16 +8,15 @@ namespace Cj.Chip8.Cpu
         private readonly IRandomizer _randomizer;
         private readonly IKeyboard _keyboard;
         private readonly IBcdConverter _bcdConverter;
-        private readonly InstructionDecoder _instructionDecoder;
+        private readonly IInstructionDecoder _instructionDecoder;
 
-        public Chip8Cpu(IDisplay display, IRandomizer randomizer, IKeyboard keyboard, IBcdConverter bcdConverter)
+        public Chip8Cpu(IDisplay display, IRandomizer randomizer, IKeyboard keyboard, IBcdConverter bcdConverter, IInstructionDecoder instructionDecoder)
         {
             _display = display;
             _randomizer = randomizer;
             _keyboard = keyboard;
             _bcdConverter = bcdConverter;
-
-            _instructionDecoder = new InstructionDecoder();
+            _instructionDecoder = instructionDecoder;
 
             State = new CpuState();
         }
@@ -26,7 +25,7 @@ namespace Cj.Chip8.Cpu
         {
             byte upper = State.Memory[State.ProgramCounter];
             byte lower = State.Memory[State.ProgramCounter + 1];
-            short instruction = (short) ((upper << 8) | lower);
+            short instruction = (short)((upper << 8) | lower);
 
             _instructionDecoder.DecodeAndExecute(instruction, this);
 

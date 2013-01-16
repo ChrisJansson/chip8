@@ -27,6 +27,7 @@ namespace Cj.Chip8.Test
         private Mock<IRandomizer> _randomizer;
         private Mock<IKeyboard> _keyboard;
         private Mock<IBcdConverter> _bcdConverter;
+        private Mock<IInstructionDecoder> _instructionDecoder;
 
         [SetUp]
         public void SetUp()
@@ -35,8 +36,9 @@ namespace Cj.Chip8.Test
             _randomizer = new Mock<IRandomizer>();
             _keyboard = new Mock<IKeyboard>();
             _bcdConverter = new Mock<IBcdConverter>();
+            _instructionDecoder = new Mock<IInstructionDecoder>();
 
-            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object, _keyboard.Object, _bcdConverter.Object);
+            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object, _keyboard.Object, _bcdConverter.Object, _instructionDecoder.Object);
         }
 
         [Test]
@@ -1049,6 +1051,19 @@ namespace Cj.Chip8.Test
 
                 ResetCpuState();
             }
+        }
+
+        [Test]
+        public void Emulate_cycle_should_read_instruction_from_memory_and_call_instruction_decoder()
+        {
+            _cpu.State.Memory[0x400] = 0x43;
+            _cpu.State.Memory[0x401] = 0x65;
+            _cpu.State.ProgramCounter = 0x400;
+
+            _cpu.EmulateCycle();
+
+            const int instruction = 0x4365;
+            _instructionDecoder.Verify(x => x.DecodeAndExecute(instruction, _cpu));
         }
 
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);

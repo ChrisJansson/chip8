@@ -46,6 +46,7 @@
     <Compile Include="IBcdConverter.cs" />
     <Compile Include="IChip8Cpu.cs" />
     <Compile Include="IDisplay.cs" />
+    <Compile Include="IInstructionDecoder.cs" />
     <Compile Include="IKeyboard.cs" />
     <Compile Include="InstructionDecoder.cs" />
     <Compile Include="IRandomizer.cs" />
