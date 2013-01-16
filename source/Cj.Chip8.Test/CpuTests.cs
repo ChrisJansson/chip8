@@ -1066,6 +1066,19 @@ namespace Cj.Chip8.Test
             _instructionDecoder.Verify(x => x.DecodeAndExecute(instruction, _cpu));
         }
 
+        [Test]
+        public void Emulate_cycle_should_decrease_()
+        {
+            _cpu.State.Memory[0x400] = 0x43;
+            _cpu.State.Memory[0x401] = 0x65;
+            _cpu.State.ProgramCounter = 0x400;
+
+            _cpu.EmulateCycle();
+
+            const int instruction = 0x4365;
+            _instructionDecoder.Verify(x => x.DecodeAndExecute(instruction, _cpu));
+        }
+
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
 
         private void TestForAllRegistersAndArgumentRange(RegisterTestAssertDelegate asserter, int argumentMax)

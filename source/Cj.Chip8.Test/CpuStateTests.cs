@@ -16,6 +16,12 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
+        public void Program_counter_should_be_0x200_from_the_start()
+        {
+            _cpuState.ProgramCounter.Should().Be(0x200);
+        }
+
+        [Test]
         public void Should_have_4_kilo_bytes_of_memory()
         {
             _cpuState.Memory.Should().BeOfType<byte[]>();

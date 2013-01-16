@@ -30,7 +30,7 @@ namespace Cj.Chip8.Cpu
         }
 
         public readonly byte[] Memory = new byte[4096];
-        public short ProgramCounter = 0;
+        public short ProgramCounter = 0x200;
         public byte StackPointer;
 
         public short[] Stack = new short[16];
