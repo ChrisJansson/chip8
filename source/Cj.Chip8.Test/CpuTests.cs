@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Cj.Chip8.Cpu;
@@ -28,6 +29,7 @@ namespace Cj.Chip8.Test
         private Mock<IKeyboard> _keyboard;
         private Mock<IBcdConverter> _bcdConverter;
         private Mock<IInstructionDecoder> _instructionDecoder;
+        private Mock<ITimerClock> _timerClock;
 
         [SetUp]
         public void SetUp()
@@ -37,8 +39,9 @@ namespace Cj.Chip8.Test
             _keyboard = new Mock<IKeyboard>();
             _bcdConverter = new Mock<IBcdConverter>();
             _instructionDecoder = new Mock<IInstructionDecoder>();
+            _timerClock = new Mock<ITimerClock>();
 
-            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object, _keyboard.Object, _bcdConverter.Object, _instructionDecoder.Object);
+            _cpu = new Chip8Cpu(_display.Object, _randomizer.Object, _keyboard.Object, _bcdConverter.Object, _instructionDecoder.Object, _timerClock.Object);
         }
 
         [Test]
@@ -1067,16 +1070,48 @@ namespace Cj.Chip8.Test
         }
 
         [Test]
-        public void Emulate_cycle_should_decrease_()
+        public void Emulate_cycle_should_not_decrement_timers_if_1_60th_has_not_passed()
+        {
+            _cpu.State.SoundTimer = 2;
+            _cpu.State.DelayTimer = 3;
+
+            var times = new List<double> {0, 1/70.0};
+            
+            _timerClock.SetupGet(x => x.ElapsedSeconds).Returns(times.AsValueFunction());
+            _cpu.EmulateCycle();
+            _cpu.EmulateCycle();
+
+            _cpu.State.SoundTimer.Should().Be(2);
+            _cpu.State.DelayTimer.Should().Be(3);
+        }
+
+        [Test]
+        public void Emulate_cycle_should_decrement_timers_if_1_60th_has_passed()
+        {
+            _cpu.State.SoundTimer = 2;
+            _cpu.State.DelayTimer = 3;
+
+            var times = new List<double> { 0, 1 / 50.0 };
+
+            _timerClock.SetupGet(x => x.ElapsedSeconds).Returns(times.AsValueFunction());
+            _cpu.EmulateCycle();
+            _cpu.EmulateCycle();
+
+            _cpu.State.SoundTimer.Should().Be(1);
+            _cpu.State.DelayTimer.Should().Be(2);
+        }
+
+        [Test]
+        public void Emulate_cycle_should_reset_timer_when_it_has_passed_60Hz()
         {
             _cpu.State.Memory[0x400] = 0x43;
             _cpu.State.Memory[0x401] = 0x65;
             _cpu.State.ProgramCounter = 0x400;
 
+            _timerClock.SetupGet(x => x.ElapsedSeconds).Returns(1/50.0);
             _cpu.EmulateCycle();
 
-            const int instruction = 0x4365;
-            _instructionDecoder.Verify(x => x.DecodeAndExecute(instruction, _cpu));
+            _timerClock.Verify(x => x.Reset());
         }
 
         private delegate void RegisterTestAssertDelegate(byte register, byte argument);
@@ -1161,6 +1196,22 @@ namespace Cj.Chip8.Test
         {
             instructionGetter(_cpu);
             return _cpu.State;
+        }
+    }
+
+    public static class SequenceExtensions
+    {
+        public static Func<double> AsValueFunction(this IEnumerable<double> list)
+        {
+            var enumerator = list.GetEnumerator();
+            enumerator.MoveNext();
+
+            return () =>
+                {
+                    var current = enumerator.Current;
+                    enumerator.MoveNext();
+                    return current;
+                };
         }
     }
 

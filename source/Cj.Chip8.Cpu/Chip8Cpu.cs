@@ -9,14 +9,16 @@ namespace Cj.Chip8.Cpu
         private readonly IKeyboard _keyboard;
         private readonly IBcdConverter _bcdConverter;
         private readonly IInstructionDecoder _instructionDecoder;
+        private readonly ITimerClock _timerClock;
 
-        public Chip8Cpu(IDisplay display, IRandomizer randomizer, IKeyboard keyboard, IBcdConverter bcdConverter, IInstructionDecoder instructionDecoder)
+        public Chip8Cpu(IDisplay display, IRandomizer randomizer, IKeyboard keyboard, IBcdConverter bcdConverter, IInstructionDecoder instructionDecoder, ITimerClock timerClock)
         {
             _display = display;
             _randomizer = randomizer;
             _keyboard = keyboard;
             _bcdConverter = bcdConverter;
             _instructionDecoder = instructionDecoder;
+            _timerClock = timerClock;
 
             State = new CpuState();
         }
@@ -29,9 +31,15 @@ namespace Cj.Chip8.Cpu
 
             _instructionDecoder.DecodeAndExecute(instruction, this);
 
-            if (State.DelayTimer > 0)
+            var shouldDecrementTimers = _timerClock.ElapsedSeconds > 1/60.0;
+            if (shouldDecrementTimers)
+            {
+                _timerClock.Reset();    
+            }
+            
+            if (State.DelayTimer > 0 && shouldDecrementTimers)
                 State.DelayTimer -= 1;
-            if (State.SoundTimer > 0)
+            if (State.SoundTimer > 0 && shouldDecrementTimers)
                 State.SoundTimer -= 1;
         }
 
