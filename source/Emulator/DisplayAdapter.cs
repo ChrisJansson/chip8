@@ -3,7 +3,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Cj.Chip8.Cpu;
 
-namespace Emulator
+namespace Gui
 {
     public class DisplayAdapter
     {

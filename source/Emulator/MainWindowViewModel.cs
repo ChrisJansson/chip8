@@ -10,7 +10,7 @@ using Cj.Chip8.Cpu;
 using Microsoft.Win32;
 using System.Linq;
 
-namespace Emulator
+namespace Gui
 {
     public class DelegateCommand : ICommand
     {

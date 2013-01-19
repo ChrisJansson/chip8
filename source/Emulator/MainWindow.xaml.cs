@@ -1,4 +1,4 @@
-﻿namespace Emulator
+﻿namespace Gui
 {
     public partial class MainWindow
     {

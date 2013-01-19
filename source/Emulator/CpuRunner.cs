@@ -2,10 +2,9 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using Cj.Chip8.Cpu;
 
-namespace Emulator
+namespace Gui
 {
     public class CpuRunner
     {
