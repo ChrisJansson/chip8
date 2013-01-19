@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
@@ -15,7 +14,7 @@ namespace Emulator
 {
     public class DelegateCommand : ICommand
     {
-        private Action _delegateAction;
+        private readonly Action _delegateAction;
 
         public DelegateCommand(Action delegateAction)
         {
@@ -46,6 +45,12 @@ namespace Emulator
 
         private void LoadRom()
         {
+            if (_cpuRunner != null)
+            {
+                _cpuRunner.Stop();
+                _cpuRunner = null;
+            }
+
             var openFileDialog = new OpenFileDialog();
             var showDialog = openFileDialog.ShowDialog(View);
 
@@ -66,33 +71,21 @@ namespace Emulator
             var randomizer = new Randomizer();
             var wpfKeyboard = new WpfKeyboard(View);
             var bcdConverter = new BcdConverter();
-            var chip8Cpu = new Chip8Cpu(display, randomizer, wpfKeyboard, bcdConverter);
+            var instructionDecoder = new InstructionDecoder();
+            var timerClock = new TimerClock();
+
+            var chip8Cpu = new Chip8Cpu(display, randomizer, wpfKeyboard, bcdConverter, instructionDecoder, timerClock);
 
             Array.Copy(buffer, 0, chip8Cpu.State.Memory, 0x200, buffer.Length);
             chip8Cpu.State.ProgramCounter = 0x200;
 
-            var displayAdapter = new DisplayAdapter();
-
-            var thread = new Thread(() =>
-                {
-                    while (true)
-                    {
-                        chip8Cpu.EmulateCycle();
-
-                        if (display.Dirty)
-                        {
-                            View.Dispatcher.Invoke(() => BitmapSource = displayAdapter.CreateBitmap(display));    
-                            display.Dirty = false;
-                        }
-
-                        Thread.Sleep(1);
-                    }
-                });
-
-            thread.Start();
+            _cpuRunner = new CpuRunner(this, chip8Cpu, display);
+            _cpuRunner.Start();
         }
 
         private BitmapSource _bitmapSource;
+        private CpuRunner _cpuRunner;
+
         public BitmapSource BitmapSource
         {
             get { return _bitmapSource; }
