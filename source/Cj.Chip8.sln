@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cj.Chip8.Cpu", "Cj.Chip8.Cp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cj.Chip8.Test", "Cj.Chip8.Test\Cj.Chip8.Test.csproj", "{F5D940F2-A599-4A4A-BB40-8A573F2D734D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulator", "Emulator\Emulator.csproj", "{E35FD7DA-C7DA-48E0-B68D-BE04651A2AE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gui", "Emulator\Gui.csproj", "{E35FD7DA-C7DA-48E0-B68D-BE04651A2AE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
